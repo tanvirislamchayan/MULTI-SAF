@@ -1,0 +1,130 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAF | LOGIN</title>
+    <!-- bootstrap -->
+     <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+    <!-- css -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <!-- google fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <!-- font awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+</head>
+<style>
+    body, div, label, input, ::placeholder, p, span, strong, h1, small {
+        font-family: 'Jost', 'Serif' !important;
+    }
+</style>
+<body>
+
+        <!-- Decorative Background -->
+        <div class="background-decor">
+            <div class="circle circle1"></div>
+            <div class="circle circle2"></div>
+            <div class="circle circle3"></div>
+        </div>
+
+
+    <!-- navigation -->
+    <div class="nav-main container-fluid bg-light p-1 py-2">
+        <div class="container mx-auto d-flex justify-content-between gap-3 py-1">
+            <div class="left-nav d-flex justify-content-between gap-2 w-sm-auto flex-wrap">
+                <a class="navbar-brand" href="#">
+                    <img src="{% static 'img/dimo-fav.png' %}" width="100%" height="30" alt="">
+                </a>
+                <button id="btnNavOpen" class="btn-wrapper btn btn-warning btn-sm">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+            <div id="wrapperDiv" class="div-wrapper shadow p-2 pt-5">
+                <!-- <button id="btnNavCls" class="btn-wrapper text-warning">
+                    <i class="fa-solid fa-xmark"></i>
+                </button> -->
+                <a href="#" class="nav-items text-white nav-link p-1 pb-0">
+                    <i class="fa-regular fa-window-maximize me-1"></i> JSTechBD
+                </a>
+                <!-- <a href="schema_create_form.html" class="nav-items text-white nav-link p-1 pb-0">
+                    <i class="fa-solid fa-credit-card"></i> Purchase
+                </a> -->
+                <a href="login.html" class="nav-items text-white nav-link p-1 pb-0">
+                    <i class="fa-solid fa-arrow-right-to-bracket"></i> Login
+                </a>
+                <button class="nav-items text-warning text-white nav-link p-1 pb-0">
+                    <i class="fa fa-solid fa-gear"></i> Settings
+                </button>
+            </div>
+            <div class="mid-nav d-flex justify-content-start gap-2">
+                <!-- <a href="#" class="nav-items text-white nav-link p-1 pb-0">
+                    <i class="fa-regular fa-window-maximize me-1"></i> JSTechBD
+                </a> -->
+            </div>
+            <div class="end-nav ms-auto d-flex justify-content-end gap-2">
+                <!-- <a href="schema_create_form.html" class="nav-items text-white nav-link p-1 pb-0">
+                    <i class="fa-solid fa-credit-card"></i>
+                </a> -->
+                <a href="#" class="nav-items text-white nav-link p-1 pb-0">
+                    <i class="fa-solid fa-arrow-right-to-bracket"></i> 
+                </a>
+                <button class="nav-items text-warning text-white nav-link p-1 pb-0">
+                    <i class="fa fa-solid fa-gear"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <section class="container mx-auto">
+        <div class="row">
+            <div class="col-md-7 mx-auto col-sm-12 p-2 my-5 border rounded shadow-sm form-div">
+                <form action="" class="row register_form">
+                    <div class="col-6 mb-3">
+                        <input type="text" name="first_name" id="first_name" class="form-control" placeholder="First Name">
+                    </div>
+                    <div class="col-6 mb-3">
+                        <input type="text" name="last_name" id="last_name" class="form-control" placeholder="Last Name">
+                    </div>
+                    <div class="col-12 mb-3">
+                        <input type="text" name="institute" id="institute" class="form-control" placeholder="College/Institute">
+                    </div>
+                    <div class="col-12 mb-3">
+                        <!-- <input type="text" name="institute" id="institute" class="form-control" placeholder="College/Institute"> -->
+                         <textarea class="form-control" name="colege_description" id="colege_description" placeholder="Location"></textarea>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <input type="email" name="email" id="email" class="form-control" placeholder="Email">
+                    </div>
+                    <div class="col-6 mb-3">
+                        <input type="tel" name="phone" id="phone" class="form-control" placeholder="WhatsApp/Phone Number">
+                    </div>
+                    <div class="col-6 mb-3">
+                        <input type="password" name="password" id="password" class="form-control" placeholder="Create Password">
+                    </div>
+                    <div class="col-6 mb-3">
+                        <input type="password" name="con_pass" id="con_pass" class="form-control" placeholder="Confirm Password">
+                    </div>
+                    <div class="col-12 d-flex justify-content-end gap-2">
+                        <button type="submit" class="btn btn-warning btn-sm">Submit</button>
+                    </div>
+                    <div class="col-12 mt-1 text-center">
+                        <small class="p-0 text">Already have an account? <a href="{% url 'login' %}">Login here.</a></small>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- bootstrap js -->
+     <script src="js/bootstrap.js"></script>
+     <script src="js/main.js"></script>
+</body>
+</html>

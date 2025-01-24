@@ -1,0 +1,30 @@
+{% extends "public/base/base.html" %}
+{% load static %}
+{% block start %}
+
+<h3 class="text-center p-2 d-heading mt-2 mb-3">
+    <i class="fa-solid fa-user-plus me-1"></i> Requests
+</h3>
+
+<div class="row">
+    {% for requested in requested_users %}
+   <div class="col-md-3 col-sm-6 p-2 mb-2">
+       <div data="{{ requested.public_user.uid }}" class="r-content d-flex gap-2 text-white flex-column shadow p-2 justify-content-start align-items-start">
+           <h5 class="mb-0 pb-0">{{ requested.first_name }} {{ requested.last_name }}</h5>
+           <small> {{ requested.public_user.institute }} </small>
+           <!-- <div class="d-flex w-100 mt-2 justify-content-start gap-2">
+               <a href="approve_request.html" class="btn text-white btn-outline-primary no-border btn-sm">
+                   <i class="fa-solid fa-arrow-up-right-from-square"></i>
+               </a>
+               <a href="#" class="btn text-white btn-outline-danger no-border btn-sm">
+                   <i class="fa-regular fa-trash-can"></i>
+               </a>
+           </div> -->
+       </div>
+   </div>
+   {% endfor %}
+</div>
+
+
+
+{% endblock %}

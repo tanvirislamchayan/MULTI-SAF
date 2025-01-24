@@ -1,0 +1,97 @@
+
+.body {
+    position: relative;
+}
+
+#toastBox {
+    position: absolute;
+    z-index: 100000;
+    top: 10px;
+    right: 10px;
+    overflow: hidden;
+}
+
+.toastboxes {
+    display: block !important;
+    background-color: #fff;
+    border: 0;
+    min-width: 200px;
+    max-width: 300px;
+    padding-right: 20px;
+    height: 70px;
+    font-weight: 500;
+    display: flex !important;
+    align-items: center !important;
+    /* box-shadow: 0 0 15px rgba(0, 0, 0, 0.3); */
+    position: relative;
+    overflow: hidden;
+    transform: translateX(100%);
+    animation: leftRight 2s linear forwards;
+}
+
+@keyframes leftRight {
+    /* 100% {
+    } */
+
+    12.5% {
+        transform: translateX(0);
+    }
+
+    87.5% {
+        transform: translateX(0);
+    }
+
+}
+
+.toastboxes i {
+    font-size: 35px;
+    margin: 0px 20px;
+    color: green;
+}
+
+.toastboxes.info i {
+    color: rgb(13, 202, 240);
+}
+
+.toastboxes.error i {
+    color: red;
+}
+
+.toastboxes.warning i {
+    color: orange;
+}
+
+.toastboxes::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    top: 95%;
+    width: 100%;
+    left: 0;
+    right: 0;
+    background-color: green;
+    animation: prog 1.5s linear forwards;
+    animation-delay: .3s;
+}
+
+@keyframes prog {
+    100% {
+        width: 0;
+    }
+}
+
+.toastboxes.error::after {
+    background-color:red;
+}
+
+.toastboxes.warning::after {
+    background-color:orange;
+}
+
+.toastboxes.info::after {
+    background-color:rgb(13, 202, 240);
+}
+
+/* .toastboxes.error::after {
+    background-color:red;
+} */

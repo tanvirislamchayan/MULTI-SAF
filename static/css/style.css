@@ -7,13 +7,18 @@
     /* font-style: normal; */
 }
 
+.no-border {
+    border: 0 !important;
+}
+
 body {
     position: relative;
 }
 
 :root{
-    --main-bg: #24a37b;
-    --nav-bg: #35c99a;
+   
+    --main-bg: #407e6a;
+    --nav-bg:  #24a37b;
 }
 
 .bg-main {
@@ -216,6 +221,7 @@ body {
     cursor: pointer;
     text-shadow: 0px 0px 15px #0005;
     position: relative;
+    background-color: var(--nav-bg);
 }
 
 .d-content:hover, .r-content:hover {
@@ -359,8 +365,7 @@ body {
     }
 
     .aside-left {
-        max-height: 1000vh !important;
-        min-height: 100vh !important;
+        min-height: 90vh !important;
         overflow: hidden !important;
         position: relative !important;
     }
@@ -386,8 +391,7 @@ body {
     }
 
     .aside-left {
-        min-height: 100vh !important;
-        max-height: 10000px !important;
+        min-height: 90vh !important;
         overflow: hidden !important;
         position: relative !important;
     }

@@ -70,12 +70,19 @@ footer {
                 <!-- <a href="schema_create_form.html" class="nav-items text-white nav-link p-1 pb-0">
                     <i class="fa-solid fa-credit-card"></i> Purchase
                 </a> -->
-                <a href="login.html" class="nav-items text-white nav-link p-1 pb-0">
-                    <i class="fa-solid fa-arrow-right-to-bracket"></i> Login
+                {% if request.user.is_authenticated %}
+                <a href="{% url 'logout' %}" class="nav-items text-white nav-link p-1 pb-0">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
                 </a>
                 <button class="nav-items text-warning text-white nav-link p-1 pb-0">
                     <i class="fa fa-solid fa-gear"></i> Settings
                 </button>
+
+                {% else %}
+                <a href="{% url 'login' %}" class="nav-items text-white nav-link p-1 pb-0">
+                    <i class="fa-solid fa-arrow-right-to-bracket"></i> Login
+                </a>
+                {% endif %}
             </div>
             <div class="mid-nav d-flex justify-content-start gap-2">
                 <!-- <a href="#" class="nav-items text-white nav-link p-1 pb-0">
@@ -86,12 +93,19 @@ footer {
                 <!-- <a href="schema_create_form.html" class="nav-items text-white nav-link p-1 pb-0">
                     <i class="fa-solid fa-credit-card"></i>
                 </a> -->
-                <a href="#" class="nav-items text-white nav-link p-1 pb-0">
-                    <i class="fa-solid fa-arrow-right-to-bracket"></i> 
+                {% if request.user.is_authenticated %}
+                <a href="{% url 'logout' %}" class="nav-items text-white nav-link p-1 pb-0">
+                    <i class="fa-solid fa-right-from-bracket"></i>
                 </a>
                 <button class="nav-items text-warning text-white nav-link p-1 pb-0">
                     <i class="fa fa-solid fa-gear"></i>
                 </button>
+                {% else %}
+                <a href="{% url 'login' %}" class="nav-items text-white nav-link p-1 pb-0">
+                    <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                </a>
+                {% endif %}
+
             </div>
         </div>
     </div>
@@ -99,7 +113,8 @@ footer {
     <section class="container mx-auto">
         <div class="row">
             <div class="col-md-7 mx-auto col-sm-12 p-2 my-5 border rounded shadow-sm form-div">
-                <form action="" class="row register_form">
+                <form action="" class="row register_form" method="post">
+                    {% csrf_token %}
                     <div class="col-6 mb-3">
                         <input type="text" name="first_name" id="first_name" class="form-control" placeholder="First Name">
                     </div>
@@ -137,8 +152,8 @@ footer {
     </section>
 
 
-    <footer class="container-fluid p-2 mb-0 text-warning bg-dark text-end">
-        &copy; 2025 | All copyright reserved by <a href="jstechbd.com">JS Technology</a>
+    <footer class="container-fluid p-2 mb-0 text-white bg-dark text-end">
+        &copy; 2025 | All copyright reserved by <a class="text-warning" href="https://jstechbd.com">JS Technology</a>
     </footer>
     <!-- bootstrap js -->
      <script src="js/bootstrap.js"></script>

@@ -1,0 +1,158 @@
+{% extends 'public/base/base.html' %}
+{% load static %}
+{% block start %}
+
+<h3 class="text-center p-2 d-heading mt-2 mb-5">
+    <i class="fa-solid fa-user-plus me-1"></i> {{ user.user.first_name }}&nbsp;{{ user.user.last_name }}
+</h3>
+
+<div class="row">
+    <div class="col-md-7 mx-auto p-2 border bg-light shadow-sm rounded">
+        <form action="#" class="row">
+            <div class="col-md-12 mb-2">
+                <label for="name">Name</label>
+                <input type="text" name="name" id="name" class="form-control" readonly value="{{ user.user.first_name }}&nbsp;{{ user.user.last_name }}">
+            </div>
+            <div class="col-md-12 mb-2">
+                <label for="institute">College/Institute</label>
+                <input type="text" name="institute" id="institute" class="form-control" value="{{user.institute}}">
+            </div>
+            <div class="col-md-12 mb-2">
+                <label for="schema">Schema Name </label>
+                <input data-validity="{{schemas}}" type="text" name="schema" id="schema" class="form-control">
+                <small id="validSchema" class="text-success d-none ms-1">This name is valid!</small>
+                <small id="inValidSchema" class="text-danger d-none ms-1">This name is invalid!</small>
+            </div>
+            <div class="col-md-4 mb-2 domain">
+                <label for="subdomain">Sub-Domain</label>
+                <input type="text" class="form-control" name="fix-domain" id="fix-domain" readonly value="saf">
+                <small id="validDomain" class="text-success d-none ms-1">This domain is valid!</small>
+                <small id="inValidDomain" class="text-danger d-none ms-1">This domain is invalid!</small>
+            </div>
+            <div class="col-md-4 mb-2 domain">
+                <label for="n/a" class="invisible">Sub-Domain</label>
+                <input data-validity="{{ domains }}" type="text" class="form-control" name="sub-domain" id="sub-domain" placeholder="Sub-Domain">
+            </div>
+            <div class="col-md-4 mb-2">
+                <label for="n/a1" class="invisible">Sub-Domain</label>
+                <input type="text" class="form-control" name="domain" id="domain" readonly value="jstechbd">
+            </div>
+            <div class="col-md-12 mt-2 d-flex justify-content-end gap-2">
+                <a href="{% url 'requests' %}" class="btn btn-sm btn-danger">Cancel</a>
+                <button id="approveSubmitBtn" type="submit" class="btn btn-sm btn-warning">Approve</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const instituteInput = document.getElementById('institute');
+        const schemaInput = document.getElementById('schema');
+        const instVal = instituteInput.value.trim();
+        const validSchema = document.getElementById('validSchema');
+        const inValidSchema = document.getElementById('inValidSchema');
+        const validDomain = document.getElementById('validDomain');
+        const inValidDomain = document.getElementById('inValidDomain');
+        const schemaValidateArray = schemaInput.getAttribute('data-validity');
+        const domainInput = document.getElementById('sub-domain');
+        const domianValidateArray = domainInput.getAttribute('data-validity');
+        const approveSubmitBtn = document.getElementById('approveSubmitBtn');
+        approveSubmitBtn.disabled = true
+        let schemaStatus, domainStatus;
+
+
+        let validateSchema = () => {
+            let schemaArr = schemaValidateArray.split("'")
+            if(schemaArr.includes(schemaInput.value)) {
+                // invalid
+                inValidSchema.classList.remove('d-none');
+                validSchema.classList.add('d-none')
+                schemaInput.classList.add('border-danger', 'text-danger')
+                schemaInput.classList.remove('border-success', 'text-success')
+                schemaStatus = false;
+            } else if (!schemaInput.value)  {
+                // no input
+                inValidSchema.classList.add('d-none');
+                validSchema.classList.add('d-none')
+                schemaStatus = false;
+                schemaInput.classList.remove('border-success', 'border-danger', 'text-danger', 'text-success');
+            } else {
+                // valid
+                inValidSchema.classList.add('d-none');
+                validSchema.classList.remove('d-none')
+                schemaInput.classList.remove('border-danger', 'text-danger')
+                schemaInput.classList.add('border-success', 'text-success')
+                schemaStatus = true;
+            }
+        };
+
+        let validateDomain = () => {
+            let domainArr = domianValidateArray.split("'");
+            let domainValue = domainInput.value.trim(); // Trim whitespace
+
+            if (!domainValue) {
+                // No input
+                console.log('no input');
+                domainStatus = false;
+                validDomain.classList.add('d-none');
+                inValidDomain.classList.add('d-none');
+                domainInput.classList.remove('border-success', 'border-danger', 'text-danger', 'text-success');
+            } else if (domainArr.includes(domainValue)) {
+                // Invalid domain
+                console.log('invalid domain');
+                domainStatus = false;
+                domainInput.classList.add('border-danger', 'text-danger');
+                domainInput.classList.remove('border-success', 'text-success');
+                validDomain.classList.add('d-none');
+                inValidDomain.classList.remove('d-none');
+            } else {
+                // Valid domain
+                console.log('valid');
+                domainStatus = true;
+                domainInput.classList.remove('border-danger', 'text-danger');
+                domainInput.classList.add('border-success', 'text-success');
+                validDomain.classList.remove('d-none');
+                inValidDomain.classList.add('d-none');
+            }
+        };
+
+        let validateapproveBtn = () => {
+            console.log(schemaStatus)
+            console.log(domainStatus)
+            if (schemaStatus === true && domainStatus === true) {
+                approveSubmitBtn.disabled=false;
+            } else {
+                approveSubmitBtn.disabled=true;
+            }
+        };
+
+        if(instVal){
+            let convert = instVal.toLowerCase().replace(/ /g, '_');
+            schemaInput.value = convert
+            validateSchema();
+        }
+
+        schemaInput.addEventListener('input', () => {
+            validateSchema();
+            validateapproveBtn();
+        });
+        domainInput.addEventListener('input', () => {
+            validateDomain();
+            validateapproveBtn();
+        });
+        
+        instituteInput.addEventListener('input', () => {
+            let value = instituteInput.value.trim();
+            let convertedValue = value.toLowerCase().replace(/ /g, '_'); 
+            schemaInput.value = convertedValue;
+            validateSchema();
+        });
+        validateSchema();
+        validateDomain();
+        validateapproveBtn();
+    });
+</script>
+
+
+{% endblock %}

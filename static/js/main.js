@@ -59,4 +59,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     })
     
+    // requested user handeler
+    const rContents = document.querySelectorAll('.r-content');
+    rContents.forEach(content => {
+        let uid = content.getAttribute('data');
+        console.log(uid)
+        content.addEventListener('click', () => {
+            let currentUrl = new URL(window.location.href);
+            currentUrl.searchParams.set('uid', uid);
+            window.location.href = currentUrl.toString();
+        });
+    });
 });

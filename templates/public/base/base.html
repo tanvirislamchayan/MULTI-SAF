@@ -1,98 +1,75 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAF | LOGIN</title>
+    <title>{{page}}</title>
     <!-- bootstrap -->
      <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
-     <link rel="stylesheet" href="{% static 'css/msg.css' %}">
     <!-- css -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/msg.css' %}">
     <!-- google fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Macondo&display=swap" rel="stylesheet">
     <!-- font awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- favicon -->
     <link rel="icon" type="image/x-icon" href="{% static 'img/logo.png' %}">
 
-</head>
-<style>
-    html, body {
-    height: 100%;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-}
-footer {
-    margin-top: auto;
-}
-    body, div, label, input, ::placeholder, p, span, strong, h1, small {
-        font-family: 'Jost', 'Serif' !important;
-    }
-    footer {
-        margin-top: auto;
-    }
-</style>
-<body>
 
-        <!-- Decorative Background -->
-        <div class="background-decor">
-            <div class="circle circle1"></div>
-            <div class="circle circle2"></div>
-            <div class="circle circle3"></div>
-        </div>
+</head>
+<body class="bg-dark">
 
 
     <!-- navigation -->
-    <div class="nav-main container-fluid bg-light p-1 py-2">
+    <div class="nav-main shadow container-fluid bg-light p-1 py-2">
         <div class="container mx-auto d-flex justify-content-between gap-3 py-1">
             <div class="left-nav d-flex justify-content-between gap-2 w-sm-auto flex-wrap">
                 <a class="navbar-brand d-flex gap-2 flex-no-wrap" href="https://jstechbd.com">
                     <img src="{% static 'img/logo.png' %}" width="100%" height="30" alt="">
                      <span style="font-weight: 700;" class="text-white">JS Technology</span>
                 </a>
+
                 <button id="btnNavOpen" class="btn-wrapper btn btn-warning btn-sm">
                     <i class="fa-solid fa-bars"></i>
                 </button>
             </div>
             <div id="wrapperDiv" class="div-wrapper shadow p-2 pt-5">
-                <!-- <button id="btnNavCls" class="btn-wrapper text-warning">
+                <button id="btnNavCls" class="btn-wrapper text-warning">
                     <i class="fa-solid fa-xmark"></i>
-                </button> -->
-                <a href="#" class="nav-items text-white nav-link p-1 pb-0">
+                </button>
+                <!-- <a href="#" class="nav-items text-white nav-link p-1 pb-0">
                     <i class="fa-regular fa-window-maximize me-1"></i> JSTechBD
-                </a>
+                </a> -->
                 <!-- <a href="schema_create_form.html" class="nav-items text-white nav-link p-1 pb-0">
                     <i class="fa-solid fa-credit-card"></i> Purchase
                 </a> -->
                 {% if request.user.is_authenticated %}
                 <a href="{% url 'logout' %}" class="nav-items text-white nav-link p-1 pb-0">
-                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                    <i class="fa-solid fa-right-from-bracket me-1"></i> Logout
                 </a>
-                <button class="nav-items text-warning text-white nav-link p-1 pb-0">
-                    <i class="fa fa-solid fa-gear"></i> Settings
-                </button>
-
                 {% else %}
                 <a href="{% url 'login' %}" class="nav-items text-white nav-link p-1 pb-0">
                     <i class="fa-solid fa-arrow-right-to-bracket"></i> Login
                 </a>
                 {% endif %}
+                <button class="nav-items text-warning text-white nav-link p-1 pb-0">
+                    <i class="fa fa-solid fa-gear"></i> Settings
+                </button>
             </div>
             <div class="mid-nav d-flex justify-content-start gap-2">
                 <!-- <a href="#" class="nav-items text-white nav-link p-1 pb-0">
                     <i class="fa-regular fa-window-maximize me-1"></i> JSTechBD
                 </a> -->
             </div>
-            <div class="end-nav ms-auto d-flex justify-content-end gap-2">
+            <div class="end-nav ms-auto d-flex justify-content-end gap-1">
                 <!-- <a href="schema_create_form.html" class="nav-items text-white nav-link p-1 pb-0">
                     <i class="fa-solid fa-credit-card"></i>
                 </a> -->
@@ -100,62 +77,77 @@ footer {
                 <a href="{% url 'logout' %}" class="nav-items text-white nav-link p-1 pb-0">
                     <i class="fa-solid fa-right-from-bracket"></i>
                 </a>
-                <button class="nav-items text-warning text-white nav-link p-1 pb-0">
-                    <i class="fa fa-solid fa-gear"></i>
-                </button>
                 {% else %}
                 <a href="{% url 'login' %}" class="nav-items text-white nav-link p-1 pb-0">
                     <i class="fa-solid fa-arrow-right-to-bracket"></i>
                 </a>
                 {% endif %}
-
+                <button class="nav-items text-warning text-white nav-link p-1 pb-0">
+                    <i class="fa fa-solid fa-gear"></i>
+                </button>
             </div>
         </div>
     </div>
 
-    <section class="container mx-auto">
+    <div class="container-fluid">
         <div class="row">
-            <div class="col-md-4 mx-auto col-sm-7 p-2 my-5 border rounded shadow-sm form-div">
-                <form action="" class="row register_form" method="post">
-                    {% csrf_token %}
-                    <div class="col-12 mb-3">
-                        <input type="text" name="username" id="username" class="form-control" placeholder="Username">
-                    </div>
-                    <div class="col-12 mb-3">
-                        <input type="password" name="password" id="password" class="form-control" placeholder="Password">
-                    </div>
-                    <div class="col-12 d-flex justify-content-end gap-2">
-                        <button type="submit" class="btn btn-warning btn-sm">Login</button>
-                    </div>
-                    <div class="col-12 mt-1 text-center">
-                        <small class="p-0 text">Don't have an account? <a href="{% url 'register' %}">Register here.</a></small>
-                    </div>
-                </form>
+            <!-- aside -->
+             <div class="col-md-12">
+                <button id="btnMenusOpen" class="btnMenusOpen btn d-none btn-primary btn-sm my-2">
+                    <i class="fa-solid fa-bars me-1"></i> Menus
+                </button>
+             </div>
+            <div id="divMenus" class="aside-left col-md-2 col-sm-4 p-0 shadow-sm">
+                <div class="w-100 aside-nav {% if request.resolver_match.url_name == 'dashboard' %} active {% endif %} my-2">
+                    <a id="dashboard" href="{% url 'dashboard' %}" class="text-white p-2 nav-link ">
+                        <i class="fa-solid fa-house me-1"></i> Dashboard
+                    </a>
+                </div>
+                <div class="w-100 aside-nav my-2 {% if request.resolver_match.url_name == active_url_name %} active {% endif %} ">
+                    <a id="requests" href="{% url 'requests' %}" class="text-white p-2 nav-link ">
+                        <i class="fa-solid fa-user-plus me-1"></i> Requests
+                    </a>
+                </div>
+                <div class="w-100 aside-nav  my-2">
+                    <a id="users" href="users.html" class="text-white p-2 nav-link ">
+                        <i class="fa-regular fa-user me-1"></i> Users
+                    </a>
+                </div>
+                <div class="w-100 aside-nav  my-2">
+                    <a id="schemas" href="#" class="text-white p-2 nav-link ">
+                        <i class="fa-solid fa-database me-1"></i> Schemas
+                    </a>
+                </div>
+                <div class="w-100 aside-nav  my-2">
+                    <a id="sub-domains" href="#" class="text-white p-2 nav-link ">
+                        <i class="fa-solid fa-link me-1"></i> Sub-Domains
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-10 col-sm-12">
+
+            
+            {% block start %}
+            <!-- code goes here -->
+            {% endblock %}
+            <!-- message div -->
+            <div id="toastBox" class="d-flex flex-column-reverse justify-content-end">
             </div>
         </div>
-    </section>
+    
 
-
-    <!-- message div -->
-    <div id="toastBox" class="d-flex flex-column-reverse justify-content-end">
-    </div>
-    <footer class="container-fluid p-2 mb-0 text-white bg-dark text-end">
-        &copy; 2025 | All copyright reserved by <a class="text-warning" href="https://jstechbd.com">JS Technology</a>
-    </footer>
     <!-- bootstrap js -->
-     <script src="{% static 'js/bootstrap.js' %}"></script>
-     <script src="{% static 'js/main.js' %}"></script>
-     <script src="{% static 'js/msg.js' %}"></script>
-     {% if messages %}
-     {% for message in messages %}
-         <script>
-             document.addEventListener('DOMContentLoaded', () => {
-                showToast("{{ message.tags }}", "{{ message|escapejs }}");
-             });
-         </script>
-     {% endfor %}
-    {% endif %}
+    <script src="{% static 'js/bootstrap.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/msg.js' %}"></script>
+    {% if messages %}
+    {% for message in messages %}
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+               showToast("{{ message.tags }}", "{{ message|escapejs }}");
+            });
+        </script>
+    {% endfor %}
+   {% endif %}
 </body>
-
-
 </html>

@@ -1,0 +1,36 @@
+{% extends "public/base/base.html" %}
+{% load static %}
+{% block start %}
+
+            <!-- Dashboard -->
+                <div class="row">
+                    <div class="col-md-3 col-sm-4 col-sm-4 p-2 mb-2">
+                        <div data-link="requests" class="d-content d-flex gap-2 text-white flex-column shadow  p-3 justify-content-center align-items-center">
+                            <i class="fa-solid fa-user-plus me-1"></i>
+                            <h5 class="mb-0 pb-0">Requests</h5>
+                            <i class="notification {% if not requests %} d-none {% endif %} fa-solid fa-bell"></i>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-4 p-2 mb-2">
+                        <div data-link="users" class="d-content d-flex gap-2 text-white flex-column shadow  p-3 justify-content-center align-items-center">
+                            <i class="fa-regular fa-user me-1"></i>
+                            <h5 class="mb-0 pb-0">Users</h5>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-4 p-2 mb-2">
+                        <div data-link="schemas" class="d-content d-flex gap-2 text-white flex-column shadow  p-3 justify-content-center align-items-center">
+                            <i class="fa-solid fa-database"></i>
+                            <h5 class="mb-0 pb-0">Schemas</h5>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-4 p-2 mb-2">
+                        <div data-link="sub-domains" class="d-content d-flex gap-2 text-white flex-column shadow  p-3 justify-content-center align-items-center">
+                            <i class="fa-solid fa-link"></i>
+                            <h5 class="mb-0 pb-0">SubDomains</h5>
+                        </div>
+                    </div>
+                </div>
+             </div>
+        </div>
+
+    {% endblock %}

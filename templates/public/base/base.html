@@ -108,8 +108,8 @@
                         <i class="fa-solid fa-user-plus me-1"></i> Requests
                     </a>
                 </div>
-                <div class="w-100 aside-nav  my-2">
-                    <a id="users" href="users.html" class="text-white p-2 nav-link ">
+                <div class="w-100 aside-nav {% if request.resolver_match.url_name == user_link %} active {% endif %} my-2">
+                    <a id="users" href="{% url 'users' %}" class="text-white p-2 nav-link ">
                         <i class="fa-regular fa-user me-1"></i> Users
                     </a>
                 </div>

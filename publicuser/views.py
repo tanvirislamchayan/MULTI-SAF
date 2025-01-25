@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from public.models import Tenant, Domain
 from .models import PublicUser
 from django.contrib.auth import authenticate, login, logout
+from base.messages import sendmail
 # Create your views here.
 
 def index(request):
@@ -44,6 +45,13 @@ def user_register(request):
                 if created:
                     user_obj.set_password(password)
                     user_obj.save()
+                    # send mail
+                    name = f'{user_obj.first_name} {user_obj.last_name}'
+                    message = f"We have successfully received your request! Your software will be ready within 1 to 2 hours. Our team will contact you shortly through email once it's completed. Thank you for choosing us!"
+                    subject = 'Welcome to JS Technology'
+                    recipient_email = [user_obj.email,]
+                    template_name = 'congratulate.html'
+                    sendmail(name, message, subject, recipient_email, template_name, domain=False)
                     
                     public_user_obj, created_public = PublicUser.objects.get_or_create(
                         user=user_obj,
@@ -55,7 +63,14 @@ def user_register(request):
                         }
                     )
                     if created_public:
-                        messages.success(request, 'User Created Successfully')
+
+                        messages.info(
+                            request,
+                            f"<h3 class='p-0 m-0'>🎉 Congratulations!</h3>"
+                            f"<hr class='my-2' />"
+                            f"We have successfully received your request! Your software will be ready within 1 to 2 hours. "
+                            f"Our team will contact you shortly through email once it's completed. Thank you for choosing us!"
+                        )
                         return redirect('login')
                 else:
                     messages.warning(request, 'User already exist.')
@@ -111,7 +126,6 @@ def dashboard(request):
             context.update({
                 'requests': requests
             })
-    print(context)
     return render(request, 'public/dashboard/dashboard.html', context)
 
 
@@ -137,7 +151,26 @@ def user_requests(request):
         uid = request.GET.get('uid')
         if uid:
             return redirect('requested_details', uid=uid)
+    if 'delete' in request.GET:
+        id = request.GET.get('delete', '')
+        if id:
+            return redirect('delete_user', id=id)
     return render(request, 'public/dashboard/requests.html', context)
+
+def delete_user(request, id):
+    if not request.user.is_authenticated:
+        messages.warning(request, 'Please Login First!')
+        return redirect('login')
+    current_schema = request.tenant.schema_name
+    with schema_context(current_schema):
+        user_obj = User.objects.get(id=id)
+        user_obj.delete()
+        return redirect('requests')
+        # if user_obj:
+        #     public_user_obj = PublicUser.objects.filter(user=user_obj).first()
+        #     print(public_user_obj)
+        # return redirect('requests')
+
 
 def requested_details(request, uid):
     if not request.user.is_authenticated:
@@ -150,6 +183,8 @@ def requested_details(request, uid):
     referal_url = request.GET.get('HTTP_REFERER', request.path_info)
     with schema_context(current_schema):
         public_user_obj = PublicUser.objects.get(uid=uid)
+        if not public_user_obj:
+            return HttpResponse(f'<h1> No User found </h1>')
         schema_objs = Tenant.objects.all()
         schemas = [s.schema_name for s in schema_objs]
         domain_objs = Domain.objects.all()
@@ -158,7 +193,8 @@ def requested_details(request, uid):
         for d in domains:
             dom = d.split('.')
             if len(dom) >= 2:
-                domain_lst.append(dom[1])
+                domain_lst.append(dom[0])
+        print(domain_lst)
         context.update({
             'page': f"{public_user_obj.user.first_name if public_user_obj.user.first_name else ''} {public_user_obj.user.last_name if public_user_obj.user.last_name else ''}",
             'user': public_user_obj ,
@@ -166,4 +202,69 @@ def requested_details(request, uid):
             'domains': domain_lst,
         })
 
+        if request.method == 'POST':
+            institute = request.POST.get('institute', '')
+            schema = request.POST.get('schema', '')
+            subdomain = request.POST.get('sub-domain', '')
+            fix_domain = request.POST.get('fix-domain', '')
+            domain = request.POST.get('domain', '')
+            if all([institute, subdomain, schema, fix_domain, domain]):
+                try:
+                    domian_name = f'{subdomain}.saf.localhost'
+                    tenant_obj, tenant_created = Tenant.objects.get_or_create(
+                        schema_name=schema,
+                        defaults={
+                            'name': institute,
+                            'is_active': False,
+                            'is_master': False,
+                            'deadline': None,
+                            'favicon': None,
+                        }
+                    )
+                    if tenant_created:
+                        user = public_user_obj.user
+                        user.is_active = True
+                        user.save()
+                        public_user_obj.tenant = tenant_obj
+                        public_user_obj.is_subadmin = True
+                        public_user_obj.save()
+                        domain_obj, created_domain = Domain.objects.get_or_create(
+                            tenant=tenant_obj,
+                            defaults={
+                                'is_primary':True,
+                                'domain':domian_name,
+                            }
+                        )
+                        if created_domain:
+                            name = f'{user.first_name} {user.last_name}'
+                            message = f"We have successfully deployed your software. Thank you for choosing us!"
+                            subject = 'Welcome to JS Technology'
+                            recipient_email = [user.email,]
+                            template_name = 'congratulate.html'
+                            domain = domain_obj.domain
+                            sendmail(name, message, subject, recipient_email, template_name, domain)
+                            messages.info(request, f'Created Schema {schema} </br> Subdomain created {domain_obj.domain}')
+                            return redirect('requests')
+
+                except Exception as e:
+                    print(e)
+            return HttpResponseRedirect(referal_url)
+
     return render(request, 'public/dashboard/requested_details.html', context)
+
+def users(request):
+    context = {
+        'page': 'SAF | Users',
+        'user_link': 'users'
+    }
+
+    if not request.user.is_authenticated:
+        messages.warning(request, 'Please Login First!')
+        return redirect('login')
+    current_schema = request.tenant.schema_name
+    with schema_context(current_schema):
+        users = User.objects.filter(is_active=True, is_superuser=False)
+        context.update({
+            'users': users
+        })
+    return render(request, 'public/dashboard/users.html', context)

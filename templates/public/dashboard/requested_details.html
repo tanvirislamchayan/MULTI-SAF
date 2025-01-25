@@ -8,7 +8,8 @@
 
 <div class="row">
     <div class="col-md-7 mx-auto p-2 border bg-light shadow-sm rounded">
-        <form action="#" class="row">
+        <form action="#" class="row" method="post">
+            {% csrf_token %}
             <div class="col-md-12 mb-2">
                 <label for="name">Name</label>
                 <input type="text" name="name" id="name" class="form-control" readonly value="{{ user.user.first_name }}&nbsp;{{ user.user.last_name }}">
@@ -25,18 +26,18 @@
             </div>
             <div class="col-md-4 mb-2 domain">
                 <label for="subdomain">Sub-Domain</label>
-                <input type="text" class="form-control" name="fix-domain" id="fix-domain" readonly value="saf">
-                <small id="validDomain" class="text-success d-none ms-1">This domain is valid!</small>
-                <small id="inValidDomain" class="text-danger d-none ms-1">This domain is invalid!</small>
+                <input data-validity="{{ domains }}" type="text" class="form-control" name="sub-domain" id="sub-domain" placeholder="Sub-Domain">
             </div>
             <div class="col-md-4 mb-2 domain">
                 <label for="n/a" class="invisible">Sub-Domain</label>
-                <input data-validity="{{ domains }}" type="text" class="form-control" name="sub-domain" id="sub-domain" placeholder="Sub-Domain">
+                <input type="text" class="form-control" name="fix-domain" id="fix-domain" readonly value="saf">
             </div>
             <div class="col-md-4 mb-2">
                 <label for="n/a1" class="invisible">Sub-Domain</label>
                 <input type="text" class="form-control" name="domain" id="domain" readonly value="jstechbd">
             </div>
+            <small id="validDomain" class="text-success d-none ms-1">This domain is valid!</small>
+            <small id="inValidDomain" class="text-danger d-none ms-1">This domain is invalid!</small>
             <div class="col-md-12 mt-2 d-flex justify-content-end gap-2">
                 <a href="{% url 'requests' %}" class="btn btn-sm btn-danger">Cancel</a>
                 <button id="approveSubmitBtn" type="submit" class="btn btn-sm btn-warning">Approve</button>
@@ -93,14 +94,12 @@
 
             if (!domainValue) {
                 // No input
-                console.log('no input');
                 domainStatus = false;
                 validDomain.classList.add('d-none');
                 inValidDomain.classList.add('d-none');
                 domainInput.classList.remove('border-success', 'border-danger', 'text-danger', 'text-success');
             } else if (domainArr.includes(domainValue)) {
                 // Invalid domain
-                console.log('invalid domain');
                 domainStatus = false;
                 domainInput.classList.add('border-danger', 'text-danger');
                 domainInput.classList.remove('border-success', 'text-success');
@@ -108,7 +107,6 @@
                 inValidDomain.classList.remove('d-none');
             } else {
                 // Valid domain
-                console.log('valid');
                 domainStatus = true;
                 domainInput.classList.remove('border-danger', 'text-danger');
                 domainInput.classList.add('border-success', 'text-success');
@@ -118,8 +116,6 @@
         };
 
         let validateapproveBtn = () => {
-            console.log(schemaStatus)
-            console.log(domainStatus)
             if (schemaStatus === true && domainStatus === true) {
                 approveSubmitBtn.disabled=false;
             } else {
@@ -127,10 +123,20 @@
             }
         };
 
+        let getAcronym = (input) => {
+            return input
+            .split(' ') // Split the string into words
+            .map(word => word[0].toLowerCase()) // Take the first letter of each word and convert it to lowercase
+            .join(''); 
+        };
+
         if(instVal){
             let convert = instVal.toLowerCase().replace(/ /g, '_');
-            schemaInput.value = convert
+            schemaInput.value = convert 
+            let acronym = getAcronym(instVal);
+            domainInput.value = acronym
             validateSchema();
+            validateapproveBtn();
         }
 
         schemaInput.addEventListener('input', () => {
@@ -141,12 +147,18 @@
             validateDomain();
             validateapproveBtn();
         });
+
+
         
         instituteInput.addEventListener('input', () => {
             let value = instituteInput.value.trim();
             let convertedValue = value.toLowerCase().replace(/ /g, '_'); 
             schemaInput.value = convertedValue;
+            let acronym = getAcronym(value);
+            domainInput.value = acronym
+            console.log(acronym);
             validateSchema();
+            validateapproveBtn();
         });
         validateSchema();
         validateDomain();

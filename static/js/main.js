@@ -61,6 +61,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // requested user handeler
     const rContents = document.querySelectorAll('.r-content');
+    const customMenu = document.getElementById("custom-menu");
+    const deleteUserBtn = document.getElementById("delete-user-btn");
     rContents.forEach(content => {
         let uid = content.getAttribute('data');
         console.log(uid)
@@ -69,5 +71,38 @@ document.addEventListener('DOMContentLoaded', () => {
             currentUrl.searchParams.set('uid', uid);
             window.location.href = currentUrl.toString();
         });
+    });
+
+
+    let selectedUserId = null; 
+
+    rContents.forEach((element) => {
+        element.addEventListener("contextmenu", (event) => {
+            event.preventDefault(); // Prevent default right-click menu
+
+            // Get user data from the clicked element
+            const userId = element.getAttribute("data-id");
+            selectedUserId = userId; // Store the user ID for deletion
+
+            // Display and position the custom menu
+            customMenu.style.left = `${event.pageX}px`;
+            customMenu.style.top = `${event.pageY}px`;
+            customMenu.style.display = "block";
+        });
+    });
+
+    // Handle delete button click
+    deleteUserBtn.addEventListener("click", () => {
+        if (selectedUserId) {
+            // Redirect to the current page with the delete query parameter
+            const currentUrl = window.location.href.split('?')[0]; // Remove existing query params
+            const deleteUrl = `${currentUrl}?delete=${selectedUserId}`;
+            window.location.href = deleteUrl; // Redirect to the URL with the delete parameter
+        }
+    });
+
+    // Hide custom menu on click anywhere else
+    document.addEventListener("click", () => {
+        customMenu.style.display = "none";
     });
 });

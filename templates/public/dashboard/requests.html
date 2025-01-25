@@ -8,23 +8,75 @@
 
 <div class="row">
     {% for requested in requested_users %}
-   <div class="col-md-3 col-sm-6 p-2 mb-2">
-       <div data="{{ requested.public_user.uid }}" class="r-content d-flex gap-2 text-white flex-column shadow p-2 justify-content-start align-items-start">
-           <h5 class="mb-0 pb-0">{{ requested.first_name }} {{ requested.last_name }}</h5>
-           <small> {{ requested.public_user.institute }} </small>
-           <!-- <div class="d-flex w-100 mt-2 justify-content-start gap-2">
-               <a href="approve_request.html" class="btn text-white btn-outline-primary no-border btn-sm">
-                   <i class="fa-solid fa-arrow-up-right-from-square"></i>
-               </a>
-               <a href="#" class="btn text-white btn-outline-danger no-border btn-sm">
-                   <i class="fa-regular fa-trash-can"></i>
-               </a>
-           </div> -->
-       </div>
-   </div>
-   {% endfor %}
+    <div class="col-md-3 col-sm-6 p-2 mb-2">
+        <div data="{{ requested.public_user.uid }}" data-id="{{ requested.id }}" class="r-content d-flex gap-2 text-white flex-column shadow p-2 justify-content-start align-items-start">
+            <h5 class="mb-0 pb-0">{{ requested.first_name }} {{ requested.last_name }}</h5>
+            {% if requested.public_user.institute %}
+            <small>{{ requested.public_user.institute }}</small>
+            {% else %}
+            <small>N/A</small>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
 </div>
 
+<!-- Custom Menu -->
+<div id="custom-menu" style="display: none;">
+    <button class="mb-2 p-1 w-100 text-start" id="delete-user-btn">Remove Request</button>
+</div>
 
+<script>
+    // const rContents = document.querySelectorAll(".r-content");
+    // const customMenu = document.getElementById("custom-menu");
+    // const deleteUserBtn = document.getElementById("delete-user-btn");
+
+    // let selectedUserId = null; 
+
+    // rContents.forEach((element) => {
+    //     element.addEventListener("contextmenu", (event) => {
+    //         event.preventDefault(); // Prevent default right-click menu
+
+    //         // Get user data from the clicked element
+    //         const userId = element.getAttribute("data-id");
+    //         selectedUserId = userId; // Store the user ID for deletion
+
+    //         // Display and position the custom menu
+    //         customMenu.style.left = `${event.pageX}px`;
+    //         customMenu.style.top = `${event.pageY}px`;
+    //         customMenu.style.display = "block";
+    //     });
+    // });
+
+    // // Handle delete button click
+    // deleteUserBtn.addEventListener("click", () => {
+    //     if (selectedUserId) {
+    //         // Redirect to the current page with the delete query parameter
+    //         const currentUrl = window.location.href.split('?')[0]; // Remove existing query params
+    //         const deleteUrl = `${currentUrl}?delete=${selectedUserId}`;
+    //         window.location.href = deleteUrl; // Redirect to the URL with the delete parameter
+    //     }
+    // });
+
+    // // Hide custom menu on click anywhere else
+    // document.addEventListener("click", () => {
+    //     customMenu.style.display = "none";
+    // });
+</script>
+
+<style>
+    #custom-menu {
+        position: absolute;
+        background-color: white;
+        min-width: 150px;
+        z-index: 1050;
+        display: none;
+    }
+    #delete-user-btn {
+        border: 0;
+        background-color: transparent;
+        border-bottom: 1px solid black;
+    }
+</style>
 
 {% endblock %}

@@ -1,0 +1,60 @@
+{% extends 'public/base/base.html' %}
+{% load static %}
+{% block start %}
+
+
+                 <h3 class="text-center p-2 d-heading mt-2 mb-3">
+                     <i class="fa-regular fa-user me-1"></i> Users
+                 </h3>
+                <div class="row">
+                    <div class="col-12">
+        
+                        <div class="table-responsive-sm table-responsiv-md table-responsive-lg border shadow-sm pb-0">
+                            <table class="table table-border table-hover">
+                                <thead>
+                                  <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">UID</th>
+                                    <th scope="col">Name</th>
+                                    <!-- <th scope="col">Institute</th> -->
+                                    <th scope="col">Domain</th>
+                                    <th scope="col" class="text-end">Action</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                    {% for user in users %}
+                                    <tr>
+                                        <th scope="row">{{ forloop.counter }}</th>
+                                        <td></td>
+                                        <td>{{ user.first_name }} {{ user.last_name }}</td>
+                                        <td>
+                                            {% if user.public_user.tenant.domains.all %}
+                                                <a href="http://{{ user.public_user.tenant.domains.first.domain }}:8000" target="_blank">
+                                                    {{ user.public_user.tenant.domains.first.domain }}
+                                                    <i class="fa-solid fa-arrow-up-right-from-square ms-1"></i>
+                                                </a>
+                                            {% else %}
+                                                <span>N/A</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-end">
+                                            <a href="#" class="btn btn-outline-success btn-sm">
+                                                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                            </a>
+                                            <a href="#" class="btn btn-outline-primary btn-sm">
+                                                <i class="fa-regular fa-pen-to-square"></i>
+                                            </a>
+                                            <a href="{% url 'delete_user' user.id %}" class="btn btn-outline-danger btn-sm">
+                                                <i class="fa-regular fa-trash-can"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+{% endblock %}

@@ -74,15 +74,9 @@
                                                 <i class="fa-solid fa-arrow-up-right-from-square"></i>
                                             </a>
                                             {% endif %}
-                                            {% if user.public_user.tenant.is_active %}
-                                            <a title="Deactivate" href="#" class="btn btn-outline-primary btn-sm">
+                                            <a href="{% url 'tenant_status' user.public_user.uid %}" title="Activate" class="btn btn-outline-primary btn-sm">
                                                 <i class="fa-solid fa-forward-step"></i>
                                             </a>
-                                            {% else %}
-                                            <a href="#" title="Activate" class="btn btn-outline-primary btn-sm">
-                                                <i class="fa-solid fa-forward-step"></i>
-                                            </a>
-                                            {% endif %}
                                         </td>
                                     </tr>
                                     {% endfor %}

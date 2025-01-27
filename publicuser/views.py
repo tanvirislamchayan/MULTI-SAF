@@ -193,7 +193,8 @@ def requested_details(request, uid):
         return redirect('login')
 
     context = {
-        'active_url_name': 'requested_details'
+        'active_url_name': 'requested_details',
+        'bg_link': 'requested_details'
     }
     current_schema = request.tenant.schema_name
     referal_url = request.GET.get('HTTP_REFERER', request.path_info)
@@ -299,6 +300,10 @@ def requested_details(request, uid):
 
 
 def users(request):
+    if not request.user.is_authenticated:
+        messages.warning(request, 'Please Login First!')
+        return redirect('login')
+
     context = {
         'page': 'SAF | Users',
         'user_link': 'users'
@@ -317,4 +322,53 @@ def users(request):
 
 
 def user_details(request, uid):
-    return render(request, 'public/dashboard/user_details.html')
+    if not request.user.is_authenticated:
+        messages.warning(request, 'Please Login First!')
+        return redirect('login')
+
+    public_user = None
+    context = {
+        'page': 'SAF | USER',
+        'user_link': 'user_details',
+        'bg_link': 'user_details'
+    }
+    current_schema = request.tenant.schema_name
+    with schema_context(current_schema):
+        public_user = PublicUser.objects.filter(uid=uid).first()
+        if public_user:
+            context.update({
+                'page': f'SAF | {public_user.user.first_name} {public_user.user.last_name}',
+                'user': public_user
+            })
+
+    return render(request, 'public/dashboard/user_details.html', context)
+
+
+def tenant_status(request, uid):
+    if not request.user.is_authenticated:
+        messages.warning(request, 'Please Login First!')
+        return redirect('login')
+
+    referal_url = request.META.get('HTTP_REFERER', request.path_info)
+    current_schema = request.tenant.schema_name
+    try:
+        if not uid:
+            messages.error(request,'No UID found!')
+        with schema_context(current_schema):
+            public_user = PublicUser.objects.filter(uid=uid).first()
+            if public_user:
+                tenant_obj = public_user.tenant
+                if tenant_obj and tenant_obj.is_active:
+                    tenant_obj.is_active = False
+                    tenant_obj.save()
+                    messages.warning(request, 'Deactivated')
+                elif tenant_obj and not tenant_obj.is_active:
+                    tenant_obj.is_active = True
+                    tenant_obj.save()
+                    messages.success(request, 'Activated')
+                else:
+                    messages(request, 'No schema available.')
+                
+    except Exception as e:
+        print(e)
+    return HttpResponseRedirect(referal_url)

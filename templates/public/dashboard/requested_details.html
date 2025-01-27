@@ -42,15 +42,13 @@
                 <small id="validSchema" class="text-success d-none ms-1">This name is valid!</small>
                 <small id="inValidSchema" class="text-danger d-none ms-1">This name is invalid!</small>
             </div>
+            <div class="col-md-6 mb-2"></div>
             {% if user.description %}
             <div class="col-md-12 mb-2">
                 <label for="description">Description</label>
-                <textarea name="description" id="description" class="form-control" readonly>
-                    {{ user.description }}
-                </textarea>
+                <textarea name="description" id="description" class="form-control" readonly>{{ user.description }}</textarea>
             </div>
             {% endif %}
-            <div class="col-md-6 mb-2"></div>
 
             <div class="col-md-4 mb-2 domain">
                 <label for="subdomain">Sub-Domain</label>

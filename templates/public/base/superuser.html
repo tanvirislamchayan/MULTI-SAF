@@ -41,7 +41,7 @@
         <h1>Welcome to JS Technology!</h1>
     </div>
     <div class="content">
-        <h4>🎉 Congratulations! {{ username }},</h4>
+        <h4>🎉 Congratulations! {{ name }},</h4>
         <p>{{ message }}</p>
         <p>{{domain}}</p>
         <table>
@@ -52,6 +52,18 @@
                         {{ domain }}
                         <span style="margin-left: 5px; font-size: 12px;">&#8599;</span>
                     </a>
+                </td>
+            </tr>
+            <tr>
+                <td>Your usename:</td>
+                <td>
+                    {{ username }}
+                </td>
+            </tr>
+            <tr>
+                <td>Your passowrd:</td>
+                <td>
+                    {{ password }}
                 </td>
             </tr>
         </table>

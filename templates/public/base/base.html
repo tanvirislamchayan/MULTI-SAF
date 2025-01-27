@@ -25,7 +25,7 @@
 
 
 </head>
-<body class="bg-dark">
+<body class="{% if request.resolver_match.url_name == 'requested_details' %} bg-white {% else %} bg-dark {% endif %} ">
 
 
     <!-- navigation -->
@@ -149,5 +149,6 @@
         </script>
     {% endfor %}
    {% endif %}
+
 </body>
 </html>

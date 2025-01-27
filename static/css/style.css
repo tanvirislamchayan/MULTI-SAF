@@ -104,21 +104,26 @@ body {
 
 /* login section register section */
 
-.register_form input, textarea {
+.register_form input, textarea, select {
     background: transparent !important;
-    border: 1px solid black;
+    border: 1px solid black !important;
+    /* border: 1px solid black;
     border: 0 !important;
     border-radius: 0 !important;
-    border-bottom: 1px solid #000 !important;
+    border-bottom: 1px solid #000 !important; */
 }
 
-.register_form input::placeholder, .register_form textarea::placeholder {
-    color: #000;
+.register_form label span{
+    color:  red;
 }
+
+/* .register_form input::placeholder, .register_form textarea::placeholder {
+    color: #000;
+} */
 
 .form-div {
     backdrop-filter: blur(3px);
-    background-color: #fff5;
+    background-color: rgba(255, 255, 255, 0.589);
 }
 
 .background-decor {

@@ -10,5 +10,6 @@ urlpatterns = [
     path('user/dashboard/', views.dashboard, name='dashboard'),
     path('user/requests/', views.user_requests, name='requests'),
     path('user/requests/details/<str:uid>/', views.requested_details, name='requested_details'),
-    path('users/', views.users, name='users')
+    path('users/', views.users, name='users'),
+    path('user/details/<str:uid>', views.user_details, name='user_details')
 ]

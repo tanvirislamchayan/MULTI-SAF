@@ -2,28 +2,56 @@
 {% load static %}
 {% block start %}
 
-<h3 class="text-center p-2 d-heading mt-2 mb-5">
+
+<h3 class="text-center p-2 d-heading mt-2 ">
     <i class="fa-solid fa-user-plus me-1"></i> {{ user.user.first_name }}&nbsp;{{ user.user.last_name }}
 </h3>
-
-<div class="row">
-    <div class="col-md-7 mx-auto p-2 border bg-light shadow-sm rounded">
         <form action="#" class="row" method="post">
             {% csrf_token %}
-            <div class="col-md-12 mb-2">
+            <!-- <h4 class="col-md-12">
+                {{user.user.first_name}}&nbsp;{{user.user.last_name}}
+            </h4> -->
+            <!-- <div class="col-md-6 mb-2">
                 <label for="name">Name</label>
                 <input type="text" name="name" id="name" class="form-control" readonly value="{{ user.user.first_name }}&nbsp;{{ user.user.last_name }}">
+            </div> -->
+            <div class="col-md-6 mb-2">
+                <label for="email">eMail</label>
+                <input type="email" name="email" id="email" class="form-control" readonly value="{{ user.user.email }}">
             </div>
-            <div class="col-md-12 mb-2">
+            <div class="col-md-6 mb-2">
+                <label for="phone">Phone</label>
+                <input type="tel" name="phone" id="phone" class="form-control" maxlength="15" value="+88{{user.phone}}" readonly>
+            </div>
+            <div class="col-md-6 mb-2">
                 <label for="institute">College/Institute</label>
                 <input type="text" name="institute" id="institute" class="form-control" value="{{user.institute}}">
             </div>
-            <div class="col-md-12 mb-2">
+            <div class="col-md-3 mb-2">
+                <label for="divistio">Division</label>
+                <input type="text" name="divistio" id="divistio" class="form-control" value="{{user.division}}" readonly>
+            </div>
+
+            <div class="col-md-3 mb-2">
+                <label for="district">District</label>
+                <input type="text" name="district" id="district" class="form-control" value="{{user.district}}" readonly>
+            </div>
+            <div class="col-md-6 mb-2">
                 <label for="schema">Schema Name </label>
                 <input data-validity="{{schemas}}" type="text" name="schema" id="schema" class="form-control">
                 <small id="validSchema" class="text-success d-none ms-1">This name is valid!</small>
                 <small id="inValidSchema" class="text-danger d-none ms-1">This name is invalid!</small>
             </div>
+            {% if user.description %}
+            <div class="col-md-12 mb-2">
+                <label for="description">Description</label>
+                <textarea name="description" id="description" class="form-control" readonly>
+                    {{ user.description }}
+                </textarea>
+            </div>
+            {% endif %}
+            <div class="col-md-6 mb-2"></div>
+
             <div class="col-md-4 mb-2 domain">
                 <label for="subdomain">Sub-Domain</label>
                 <input data-validity="{{ domains }}" type="text" class="form-control" name="sub-domain" id="sub-domain" placeholder="Sub-Domain">
@@ -40,11 +68,10 @@
             <small id="inValidDomain" class="text-danger d-none ms-1">This domain is invalid!</small>
             <div class="col-md-12 mt-2 d-flex justify-content-end gap-2">
                 <a href="{% url 'requests' %}" class="btn btn-sm btn-danger">Cancel</a>
-                <button id="approveSubmitBtn" type="submit" class="btn btn-sm btn-warning">Approve</button>
+
+                <button id="approveSubmitBtn" type="submit" class="btn btn-sm btn-primary">Approve</button>
             </div>
         </form>
-    </div>
-</div>
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -158,6 +185,7 @@
             domainInput.value = acronym
             console.log(acronym);
             validateSchema();
+            validateDomain();
             validateapproveBtn();
         });
         validateSchema();

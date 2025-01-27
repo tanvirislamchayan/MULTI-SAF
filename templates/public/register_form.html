@@ -10,6 +10,7 @@
      <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
     <!-- css -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/msg.css' %}">
     <!-- google fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -31,7 +32,7 @@
 footer {
     margin-top: auto;
 }
-    body, div, label, input, ::placeholder, p, span, strong, h1, small {
+    body, div, label, input, ::placeholder, p, span, strong, h1, h5, h3, h4, small {
         font-family: 'Jost', 'Serif' !important;
     }
     footer {
@@ -112,36 +113,65 @@ footer {
 
     <section class="container mx-auto">
         <div class="row">
-            <div class="col-md-7 mx-auto col-sm-12 p-2 my-5 border rounded shadow-sm form-div">
+            <div class="col-md-10 mx-auto col-sm-12 p-2 my-2 border rounded shadow-sm form-div">
+                <h3 class="text-center p-2 border-bottom border-4 border-warning mb-2">Register</h3>
                 <form action="" class="row register_form" method="post">
                     {% csrf_token %}
-                    <div class="col-6 mb-3">
-                        <input type="text" name="first_name" id="first_name" class="form-control" placeholder="First Name">
+                    <div class="col-md-6 mb-3">
+                        <label for="first_name"> <span>*</span> First Name </label>
+                        <input type="text" name="first_name" id="first_name" class="form-control" placeholder="First Name" required>
                     </div>
-                    <div class="col-6 mb-3">
+                    <div class="col-md-6 mb-3">
+                        <label for="last_name">Last Name </label>
                         <input type="text" name="last_name" id="last_name" class="form-control" placeholder="Last Name">
                     </div>
                     <div class="col-12 mb-3">
-                        <input type="text" name="institute" id="institute" class="form-control" placeholder="College/Institute">
+                        <label for="institute"> <span>*</span> College/Institute </label>
+                        <input type="text" name="institute" id="institute" class="form-control" placeholder="College/Institute" required>
+                    </div>
+                    <h5>Location</h5>
+                    <div class="col-md-6 mb-3">
+                        <label for="division"> <span>*</span> Division</label>
+                        <select class="form-control" name="division" id="id_division" required>
+                            <option value="">Select Division</option>
+                            <option value="Dhaka">Dhaka</option>
+                            <option value="Chittagong">Chittagong</option>
+                            <option value="Rajshahi">Rajshahi</option>
+                            <option value="Khulna">Khulna</option>
+                            <option value="Barisal">Barisal</option>
+                            <option value="Sylhet">Sylhet</option>
+                            <option value="Rangpur">Rangpur</option>
+                            <option value="Mymensingh">Mymensingh</option>
+                        </select>                    
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="district"> <span>*</span> District </label>
+                        <input type="text" name="district" id="district" placeholder="District" class="form-control" required>
                     </div>
                     <div class="col-12 mb-3">
+                        <label for="description"> Description </label>
                         <!-- <input type="text" name="institute" id="institute" class="form-control" placeholder="College/Institute"> -->
-                         <textarea class="form-control" name="colege_description" id="colege_description" placeholder="Location"></textarea>
+                         <textarea class="form-control" name="colege_description" id="colege_description" placeholder="Write about your college or institute (optionl)"></textarea>
                     </div>
                     <div class="col-6 mb-3">
-                        <input type="email" name="email" id="email" class="form-control" placeholder="Email">
+                        <label for="email"><span>*</span> eMail </label>
+                        <input type="email" name="email" id="email" class="form-control" placeholder="Email " required>
                     </div>
                     <div class="col-6 mb-3">
+                        <label for="phone"><span>*</span> WhatsApp/Phone Number </label>
                         <input type="tel" name="phone" id="phone" class="form-control" placeholder="WhatsApp/Phone Number">
                     </div>
                     <div class="col-6 mb-3">
-                        <input type="password" name="password" id="password" class="form-control" placeholder="Create Password">
+                        <label for="password"> <span>*</span> Create Password </label>
+                        <input type="password" name="password" id="password" class="form-control" placeholder="Create a strong Password" required>
                     </div>
                     <div class="col-6 mb-3">
+                        <label for="icon_pass"> <span>*</span> Confirm Passowrd </label>
                         <input type="password" name="con_pass" id="con_pass" class="form-control" placeholder="Confirm Password">
                     </div>
                     <div class="col-12 d-flex justify-content-end gap-2">
-                        <button type="submit" class="btn btn-warning btn-sm">Submit</button>
+                        <a href="{% url 'register' %}" class="btn btn-danger btn-sm"> Cancel</a>
+                        <button type="submit" class="btn btn-primary btn-sm">Register</button>
                     </div>
                     <div class="col-12 mt-1 text-center">
                         <small class="p-0 text">Already have an account? <a href="{% url 'login' %}">Login here.</a></small>
@@ -150,13 +180,26 @@ footer {
             </div>
         </div>
     </section>
-
+    <!-- message div -->
+    <div id="toastBox" class="d-flex flex-column-reverse justify-content-end">
+    </div>
 
     <footer class="container-fluid p-2 mb-0 text-white bg-dark text-end">
         &copy; 2025 | All copyright reserved by <a class="text-warning" href="https://jstechbd.com">JS Technology</a>
     </footer>
     <!-- bootstrap js -->
-     <script src="js/bootstrap.js"></script>
-     <script src="js/main.js"></script>
+    <script src="{% static 'js/bootstrap.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/msg.js' %}"></script>
+    {% if messages %}
+    {% for message in messages %}
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+               showToast("{{ message.tags }}", "{{ message|escapejs }}");
+            });
+        </script>
+    {% endfor %}
+   {% endif %}
+</script>
 </body>
 </html>

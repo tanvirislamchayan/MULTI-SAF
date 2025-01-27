@@ -6,7 +6,57 @@
     <i class="fa-solid fa-user-plus me-1"></i> Requests
 </h3>
 
-<div class="row">
+<table class="table table-bordered table-hover table-striped table-dark">
+    <thead>
+      <tr>
+        <th class="text-center" scope="col">#</th>
+        <th class="text-center" scope="col">ID</th>
+        <th class="text-center" scope="col">Name</th>
+        <th class="text-center" scope="col">Email</th>
+        <th class="text-center" scope="col">Phone</th>
+        <th class="text-center" scope="col" class="text-end">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for user in requested_users %}
+        <tr class="">
+            <th class="text-center" scope="row"> {{forloop.counter}} </th>
+            <td class="text-center" >
+                {% if user.public_user.sid %}
+                {{ user.public_user.sid }}
+                {% else %}
+                -
+                {% endif %}
+            </td>
+            <td> {{user.first_name}} {{ user.last_name }} </td>
+            <td> {{ user.email }} </td>
+            <td title="Send message on whatsapp">
+                <a href="https://api.whatsapp.com/send?phone={{ user.public_user.phone|urlencode }}" target="_blank">
+                    {{ user.public_user.phone }}
+                </a>
+            </td>
+            
+            <td class="d-flex justify-content-end gap-3"> 
+                {% if user.public_user %}
+                <a class="text-white btn btn-outline-primary btn-sm " href="{% url 'requested_details' user.public_user.uid %}">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
+                {% else %}
+                <a class="text-white btn btn-outline-primary btn-sm " href="#">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
+                {% endif %}
+                <a class="text-danger btn btn-outline-warning btn-sm" href="{% url 'delete_user' user.id %}">
+                    <i class="fa-solid fa-trash"></i>
+                </a>
+            </td>
+          </tr>
+        {% endfor %}
+
+    </tbody>
+  </table>
+
+<!-- <div class="row">
     {% for requested in requested_users %}
     <div class="col-md-3 col-sm-6 p-2 mb-2">
         <div data="{{ requested.public_user.uid }}" data-id="{{ requested.id }}" class="r-content d-flex gap-2 text-white flex-column shadow p-2 justify-content-start align-items-start">
@@ -19,7 +69,9 @@
         </div>
     </div>
     {% endfor %}
-</div>
+
+
+</div> -->
 
 <!-- Custom Menu -->
 <div id="custom-menu" style="display: none;">

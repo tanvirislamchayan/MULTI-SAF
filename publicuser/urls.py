@@ -11,6 +11,7 @@ urlpatterns = [
     path('user/requests/', views.user_requests, name='requests'),
     path('user/requests/details/<str:uid>/', views.requested_details, name='requested_details'),
     path('users/', views.users, name='users'),
-    path('user/details/<str:uid>/', views.user_details, name='user_details'),
-    path('user/<str:uid>/tenant/status', views.tenant_status, name='tenant_status')
+    path('user/<str:uid>/details/', views.user_details, name='user_details'),
+    path('user/<str:uid>/tenant/status', views.tenant_status, name='tenant_status'),
+    path('user/<str:uid>/update/', views.user_update, name='user_update'),
 ]

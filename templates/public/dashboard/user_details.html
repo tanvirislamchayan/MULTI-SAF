@@ -15,7 +15,7 @@
 
 <div class="row">
     <div class="col-md-6 d-flex justify-content-start mb-2 gap-2">
-        <a href="#" class="btn btn-sm btn-warning">
+        <a href="{% url 'user_update' user.uid %}" class="btn btn-sm btn-warning">
             <i class="fa-regular fa-pen-to-square"></i> Edit
         </a>
         <a href="{% url 'tenant_status' user.uid %}" class="btn btn-sm {% if user.tenant.is_active %} btn-danger {% else %} btn-primary {% endif %}"><i class="fa-solid fa-forward-step"></i> {% if user.tenant.is_active %} Deactive {% else %} Active {% endif %} </a>

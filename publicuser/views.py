@@ -227,9 +227,11 @@ def requested_details(request, uid):
             subdomain = request.POST.get('sub-domain', '')
             fix_domain = request.POST.get('fix-domain', '')
             domain = request.POST.get('domain', '')
+            status = request.POST.get('status', '')
+            deadline = request.POST.get('deadline', '')
             
 
-            if all([institute, subdomain, schema, fix_domain, domain]):
+            if all([institute, subdomain, schema, fix_domain, domain, status, deadline]):
                 try:
                     with transaction.atomic():  # Start a transaction block
                         # Ensure the domain name format is correct
@@ -241,9 +243,9 @@ def requested_details(request, uid):
                                 schema_name=schema,
                                 defaults={
                                     'name': institute,
-                                    'is_active': False,
+                                    'is_active': True if status == 'true' else False,
                                     'is_master': False,
-                                    'deadline': None,
+                                    'deadline': deadline if deadline else None,
                                     'favicon': None,
                                 }
                             )
@@ -294,6 +296,9 @@ def requested_details(request, uid):
                     messages.error(request, f"Error: {str(e)}")
                     transaction.rollback()  # Rollback the transaction to ensure nothing is committed
                     messages.error(request, "Something went wrong, and all changes have been rolled back.")
+                return HttpResponseRedirect(referal_url)
+            else:
+                messages.warning(request, 'Please fill all fields.')
                 return HttpResponseRedirect(referal_url)
 
     return render(request, 'public/dashboard/requested_details.html', context)
@@ -356,8 +361,11 @@ def tenant_status(request, uid):
             messages.error(request,'No UID found!')
         with schema_context(current_schema):
             public_user = PublicUser.objects.filter(uid=uid).first()
-            if public_user:
+            if public_user :
                 tenant_obj = public_user.tenant
+                if tenant_obj and not tenant_obj.deadline:
+                    messages.warning(request, 'Please add "Deadline" first!')
+                    return redirect('user_update', public_user.uid)
                 if tenant_obj and tenant_obj.is_active:
                     tenant_obj.is_active = False
                     tenant_obj.save()
@@ -372,3 +380,74 @@ def tenant_status(request, uid):
     except Exception as e:
         print(e)
     return HttpResponseRedirect(referal_url)
+
+
+def user_update(request, uid):
+    if not request.user.is_authenticated:
+        messages.warning(request, 'Please Login First!')
+        return redirect('login')
+    current_schema = request.tenant.schema_name
+    referal_url = request.META.get('HTTP_REFERER', request.path_info)
+    public_user = None
+    context = {
+        'page': 'SAF | USER',
+        'user_link': 'user_update',
+        'bg_link': 'user_update'
+    }
+    if not uid:
+        messages.error(request, 'No UID Found')
+        return HttpResponseRedirect(referal_url)
+    with schema_context(current_schema):
+        schema_objs = Tenant.objects.all()
+        schemas = [s.schema_name for s in schema_objs]
+        domain_objs = Domain.objects.all()
+        domains = [d.domain for d in domain_objs]
+        domain_lst = ['saf', 'localhost']
+        for d in domains:
+            dom = d.split('.')
+            if len(dom) >= 2:
+                domain_lst.append(dom[0])
+        context.update({
+            'schemas': schemas,
+            'domains': domain_lst,
+        })
+
+        public_user = PublicUser.objects.filter(uid=uid).first()
+        if public_user:
+            context.update({
+                'page': f'SAF | {public_user.user.first_name} {public_user.user.last_name}',
+                'user': public_user
+            })
+
+        if request.method == 'POST' and public_user:
+            try:
+
+                schema = request.POST.get('schema', '')
+                status = request.POST.get('status', '')
+                deadline = request.POST.get('deadline', '')
+                subdomain = request.POST.get('sub-domain', '')
+                print(status)
+
+                tenant_obj = public_user.tenant
+                if tenant_obj:
+                    tenant_obj.is_active = True if status == 'true' else False
+                    tenant_obj.deadline = deadline
+                    tenant_obj.save()
+                    domain = f'{subdomain}.saf.localhost'
+                    domain_obj = tenant_obj.domains.first()
+                    domain_obj.domain = domain
+                    domain_obj.save()
+                    if tenant_obj.schema_name != schema:
+                        sql = f"ALTER SCHEMA {tenant_obj.schema_name} RENAME TO {schema}" #Change schema name
+                        with connection.cursor() as cursor:
+                            cursor.execute(sql)
+                        tenant_obj.schema_name = schema
+                        tenant_obj.save()
+                    messages.success(request, 'Updated user successfully')
+                    return redirect('user_details', public_user.uid)
+            except Exception as e:
+                print(e)
+                messages.error(request, 'Something went wrong')
+                return HttpResponseRedirect(referal_url)
+
+    return render(request, 'public/dashboard/edit_user.html', context)

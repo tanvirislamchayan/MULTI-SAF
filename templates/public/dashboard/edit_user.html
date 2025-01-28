@@ -4,17 +4,10 @@
 
 
 <h3 class="text-center p-2 d-heading mt-2 ">
-    <i class="fa-solid fa-user-plus me-1"></i> {{ user.user.first_name }}&nbsp;{{ user.user.last_name }}
+    <i class="fa-solid fa-user me-1"></i> {{ user.user.first_name }}&nbsp;{{ user.user.last_name }}
 </h3>
         <form action="#" class="row" method="post">
             {% csrf_token %}
-            <!-- <h4 class="col-md-12">
-                {{user.user.first_name}}&nbsp;{{user.user.last_name}}
-            </h4> -->
-            <!-- <div class="col-md-6 mb-2">
-                <label for="name">Name</label>
-                <input type="text" name="name" id="name" class="form-control" readonly value="{{ user.user.first_name }}&nbsp;{{ user.user.last_name }}">
-            </div> -->
             <div class="col-md-6 mb-2">
                 <label for="email">eMail</label>
                 <input type="email" name="email" id="email" class="form-control" readonly value="{{ user.user.email }}">
@@ -38,14 +31,14 @@
             </div>
             <div class="col-md-6 mb-2">
                 <label for="schema">Schema Name </label>
-                <input data-validity="{{schemas}}" type="text" name="schema" id="schema" class="form-control">
+                <input data-validity="{{schemas}}" type="text" name="schema" id="schema" class="form-control" value="{{ user.tenant.schema_name }}">
                 <small id="validSchema" class="text-success d-none ms-1">This name is valid!</small>
-                <small id="inValidSchema" class="text-danger d-none ms-1">This name is invalid!</small>
+                <small id="inValidSchema" class="text-danger d-none ms-1">Not Changed</small>
             </div>
 
             <div class="col-md-3 mb-2">
-                <label for="status"> Status</label>
-                <select required name="status" id="status" class="form-control">
+                <label for="status">Status</label>
+                <select name="status" id="status" class="form-control">
                     <option  value="">Select an Option</option>
                     <option {% if user.tenant.is_active %} selected {% endif %} value="true">
                         Active
@@ -58,9 +51,8 @@
 
             <div class="col-md-3 mb-2">
                 <label for="deadline">Deadline</label>
-                <input type="date" name="deadline" class="form-control" id="deadline" {% if user.tenant.deadline %} value="{{user.tenant.deadline}}" {% endif %}>
+                <input type="date" name="deadline" class="form-control" id="deadline" {% if user.tenant.deadline %} value="{{user.tenant.deadline|date:'Y-m-d'}}" {% endif %}>
             </div>
-
 
             {% if user.description %}
             <div class="col-md-12 mb-2">
@@ -82,11 +74,11 @@
                 <input type="text" class="form-control" name="domain" id="domain" readonly value="jstechbd">
             </div>
             <small id="validDomain" class="text-success d-none ms-1">This domain is valid!</small>
-            <small id="inValidDomain" class="text-danger d-none ms-1">This domain is invalid!</small>
+            <small id="inValidDomain" class="text-danger d-none ms-1">Not Changed</small>
             <div class="col-md-12 mt-2 d-flex justify-content-end gap-2">
-                <a href="{% url 'requests' %}" class="btn btn-sm btn-danger">Cancel</a>
+                <a href="{% url 'user_details' user.uid %}" class="btn btn-sm btn-danger">Cancel</a>
 
-                <button id="approveSubmitBtn" type="submit" class="btn btn-sm btn-primary">Approve</button>
+                <button id="approveSubmitBtn" type="submit" class="btn btn-sm btn-primary">Save</button>
             </div>
         </form>
 
@@ -103,8 +95,6 @@
         const domainInput = document.getElementById('sub-domain');
         const domianValidateArray = domainInput.getAttribute('data-validity');
         const approveSubmitBtn = document.getElementById('approveSubmitBtn');
-        approveSubmitBtn.disabled = true
-        let schemaStatus, domainStatus;
 
 
         let validateSchema = () => {
@@ -159,14 +149,6 @@
             }
         };
 
-        let validateapproveBtn = () => {
-            if (schemaStatus === true && domainStatus === true) {
-                approveSubmitBtn.disabled=false;
-            } else {
-                approveSubmitBtn.disabled=true;
-            }
-        };
-
         let getAcronym = (input) => {
             return input
             .split(' ') // Split the string into words
@@ -175,21 +157,18 @@
         };
 
         if(instVal){
-            let convert = instVal.toLowerCase().replace(/ /g, '_');
-            schemaInput.value = convert 
+            // let convert = instVal.toLowerCase().replace(/ /g, '_');
+            // schemaInput.value = convert 
             let acronym = getAcronym(instVal);
             domainInput.value = acronym
             validateSchema();
-            validateapproveBtn();
         }
 
         schemaInput.addEventListener('input', () => {
             validateSchema();
-            validateapproveBtn();
         });
         domainInput.addEventListener('input', () => {
             validateDomain();
-            validateapproveBtn();
         });
 
 
@@ -203,11 +182,9 @@
             console.log(acronym);
             validateSchema();
             validateDomain();
-            validateapproveBtn();
         });
         validateSchema();
         validateDomain();
-        validateapproveBtn();
     });
 </script>
 

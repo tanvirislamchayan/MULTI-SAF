@@ -5,6 +5,17 @@
 <h3 class="text-center p-2 d-heading mt-2 mb-3">
     <i class="fa-solid fa-user-plus me-1"></i> Requests
 </h3>
+
+<div class="row">
+    <div class="col-md-6 m-0"></div>
+<div class="col-md-6 mb-3">
+    <form action="" class="w-100 d-flex justify-content-between flex-no-wrap gap-0">
+        <input type="search" class="form-control search bg-transparent text-white" name="search" id="search">
+        <button type="submit" class="btn search-btn btn-info bgn-sm">Search</button>
+    </form>
+</div>
+</div>
+
 <div class="table-responsive">
 <table class="table table-bordered table-hover table-striped table-dark">
     <thead>
@@ -31,12 +42,12 @@
             <td> {{user.first_name}} {{ user.last_name }} </td>
             <td> {{ user.email }} </td>
             <td title="Send message on whatsapp">
-                <a href="https://api.whatsapp.com/send?phone={{ user.public_user.phone|urlencode }}" target="_blank">
+                <a href="https://api.whatsapp.com/send?phone=+88{{ user.public_user.phone|urlencode }}" target="_blank">
                     {{ user.public_user.phone }}
                 </a>
             </td>
             
-            <td class="d-flex justify-content-end gap-3"> 
+            <td class="d-flex justify-content-end flex-no-wrap gap-3"> 
                 {% if user.public_user %}
                 <a class="text-white btn btn-outline-primary btn-sm " href="{% url 'requested_details' user.public_user.uid %}">
                     <i class="fa-solid fa-arrow-up-right-from-square"></i>
@@ -56,6 +67,37 @@
     </tbody>
   </table>
 </div>
+
+
+
+<nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-end">
+      {% if requested_users.has_previous %}
+        <li class="page-item">
+          <a class="page-link bg-dark text-white" href="?page={{ requested_users.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">Previous</a>
+        </li>
+      {% endif %}
+  
+      {% for page_num in requested_users.paginator.page_range %}
+        {% if page_num == requested_users.number %}
+          <li class="page-item active" aria-current="page">
+            <a class="page-link " href="#">{{ page_num }}</a>
+          </li>
+        {% else %}
+          <li class="page-item">
+            <a class="page-link bg-dark text-white" href="?page={{ page_num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">{{ page_num }}</a>
+          </li>
+        {% endif %}
+      {% endfor %}
+  
+      {% if requested_users.has_next %}
+        <li class="page-item">
+          <a class="page-link bg-dark text-white" href="?page={{ requested_users.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">Next</a>
+        </li>
+      {% endif %}
+    </ul>
+  </nav>
+  
 <!-- <div class="row">
     {% for requested in requested_users %}
     <div class="col-md-3 col-sm-6 p-2 mb-2">

@@ -25,6 +25,44 @@
 
 
 </head>
+
+<style>
+    .settings {
+        position: relative;
+        cursor: pointer;
+    }
+
+    .settings-item {
+        position: absolute;
+        top: 110%;
+        right: 0;
+        max-width: 300px;
+        min-width: 200px;
+        transition: all .2s;
+        transform: scale(0);
+        transform-origin: top right;
+    }
+
+    .settings-item.settings-item-open {
+        transform: scale(1) !important;
+        transform-origin: top right !important;
+    }
+
+    .settings-item a {
+        transform: .3s;
+    }
+
+    .settings-item a:hover{
+        background-color: #fff !important;
+        color: #000 !important;
+    }
+
+    .bg-nav {
+        background-color: var(--nav-bg);
+    }
+
+</style>
+
 <body class="{% if request.resolver_match.url_name == bg_link %} bg-white {% else %} bg-dark {% endif %} ">
 
 
@@ -51,18 +89,36 @@
                 <!-- <a href="schema_create_form.html" class="nav-items text-white nav-link p-1 pb-0">
                     <i class="fa-solid fa-credit-card"></i> Purchase
                 </a> -->
+
+                {% if request.user.is_authenticated and request.user.is_superuser %}
+                <a id="dashboard" href="{% url 'dashboard' %}" class="text-white nav-items p-1 nav-link ">
+                    <i class="fa-solid fa-house me-1"></i> Dashboard
+                </a>
+                <a id="requests" href="{% url 'requests' %}" class="text-white nav-items p-1 nav-link ">
+                    <i class="fa-solid fa-user-plus me-1"></i> Requests
+                </a>
+                <a id="users" href="{% url 'users' %}" class="text-white p-1 nav-items nav-link ">
+                    <i class="fa-regular fa-user me-1"></i> Users
+                </a>
+                {% endif %}
+
                 {% if request.user.is_authenticated %}
                 <a href="{% url 'logout' %}" class="nav-items text-white nav-link p-1 pb-0">
                     <i class="fa-solid fa-right-from-bracket me-1"></i> Logout
                 </a>
+                <div class="nav-items text-warning settings text-white nav-link p-1 pb-0">
+                    <i class="fa fa-solid fa-gear"></i> Settings
+
+                    <div id="settingsItem" class="settings-item shadow bg-dark d-flex flex-column">
+                        <a href=" {% url 'profile' %} " class="nav-link fw-bold text-white p-2 w-100"> <i class="fa-solid fa-user me-1 me-1"></i> Profile </a>
+                        <a href="#" class="nav-link fw-bold text-white p-2 w-100"> <i class="fa-solid fa-key me-1"></i> Change Password </a>
+                    </div>
+                </div>
                 {% else %}
                 <a href="{% url 'login' %}" class="nav-items text-white nav-link p-1 pb-0">
                     <i class="fa-solid fa-arrow-right-to-bracket"></i> Login
                 </a>
                 {% endif %}
-                <button class="nav-items text-warning text-white nav-link p-1 pb-0">
-                    <i class="fa fa-solid fa-gear"></i> Settings
-                </button>
             </div>
             <div class="mid-nav d-flex justify-content-start gap-2">
                 <!-- <a href="#" class="nav-items text-white nav-link p-1 pb-0">
@@ -82,9 +138,13 @@
                     <i class="fa-solid fa-arrow-right-to-bracket"></i>
                 </a>
                 {% endif %}
-                <button class="nav-items text-warning text-white nav-link p-1 pb-0">
+                <div class="nav-items settings text-warning text-white nav-link p-1 pb-0">
                     <i class="fa fa-solid fa-gear"></i>
-                </button>
+                    <div id="settingsItem" class="settings-item shadow bg-dark d-flex flex-column">
+                        <a href=" {% url 'profile' %} " class="nav-link fw-bold text-white p-2 w-100"> <i class="fa-solid fa-user me-1 me-1"></i> Profile </a>
+                        <a href="#" class="nav-link fw-bold text-white p-2 w-100"> <i class="fa-solid fa-key me-1"></i> Change Password </a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -92,12 +152,12 @@
     <div class="container-fluid">
         <div class="row">
             <!-- aside -->
-             <div class="col-md-12">
+             <!-- <div class="col-md-12">
                 <button id="btnMenusOpen" class="btnMenusOpen btn d-none btn-primary btn-sm my-2">
                     <i class="fa-solid fa-bars me-1"></i> Menus
                 </button>
-             </div>
-            <div id="divMenus" class="aside-left col-md-2 col-sm-4 p-0 shadow-sm">
+             </div> -->
+            <div id="divMenus" style="position: sticky !important; top: 55px; max-height: 100vh" class="aside-left col-md-2 col-sm-0 d-none d-sm-block p-0 shadow-sm">
                 <div class="w-100 aside-nav {% if request.resolver_match.url_name == 'dashboard' %} active {% endif %} my-2">
                     <a id="dashboard" href="{% url 'dashboard' %}" class="text-white p-2 nav-link ">
                         <i class="fa-solid fa-house me-1"></i> Dashboard
@@ -124,7 +184,8 @@
                     </a>
                 </div>
             </div>
-            <div class="col-md-10 col-sm-12">
+            
+            <div class="col-sm-12 col-md-10">
 
             
             {% block start %}
@@ -140,6 +201,31 @@
     <script src="{% static 'js/bootstrap.js' %}"></script>
     <script src="{% static 'js/main.js' %}"></script>
     <script src="{% static 'js/msg.js' %}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const settings = document.querySelectorAll('.settings');
+            
+            settings.forEach((el) =>{
+                let iconElement = el.querySelector('i');
+                let settingItems = el.querySelector('.settings-item');
+                el.addEventListener('click', ()=> {
+                    if (settingItems.classList.contains('settings-item-open')) {
+                        settingItems.classList.remove('settings-item-open');
+                        iconElement.style.color = 'white';
+                        iconElement.style.transform = 'rotate(0deg)';
+                        iconElement.style.transition = 'all 0.2s ease';
+                    } else {
+                        settingItems.classList.add('settings-item-open')
+                        iconElement.style.transform = 'rotate(80deg)';
+                        iconElement.style.transition = 'all 0.2s ease';
+                        iconElement.style.color = 'orange';
+                    }
+                });
+            });
+            
+        });
+    </script>
+    
     {% if messages %}
     {% for message in messages %}
         <script>

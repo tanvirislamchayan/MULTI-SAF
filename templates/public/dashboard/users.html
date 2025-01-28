@@ -3,16 +3,7 @@
 {% block start %}
 
 <style>
-    .search {
-        border-radius: 0 !important;
-        border-top-left-radius: .3rem !important;
-        border-bottom-left-radius: .3rem !important;
-    }
-    .search-btn {
-        border-radius: 0 !important;
-        border-top-right-radius: .3rem !important;
-        border-bottom-right-radius: .3rem !important;
-    }
+
 </style>
 
                  <h3 class="text-center p-2 d-heading mt-2 mb-3">
@@ -64,7 +55,7 @@
                                             <span class="text-danger">DEACTIVE</span>
                                             {% endif %}
                                         </td>
-                                        <td class="text-end">
+                                        <td class="d-flex justify-content-end flex-no-wrap gap-2">
                                             {% if user.public_user %}
                                             <a href="{% url 'user_details' user.public_user.uid %}" title="Open" class="btn btn-outline-success btn-sm">
                                                 <i class="fa-solid fa-arrow-up-right-from-square"></i>
@@ -86,5 +77,35 @@
                         </div>
                     </div>
                 </div>
+
+                <nav aria-label="Pagination Navigation">
+                    <ul class="pagination justify-content-end">
+                      {% if users.has_previous %}
+                        <li class="page-item">
+                          <a class="page-link bg-dark text-white" href="?page={{ users.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">Previous</a>
+                        </li>
+                      {% endif %}
+                  
+                      {% for page_num in users.paginator.page_range %}
+                        {% if page_num == users.number %}
+                          <li class="page-item active" aria-current="page">
+                            <a class="page-link" href="#">{{ page_num }}</a>
+                          </li>
+                        {% else %}
+                          <li class="page-item">
+                            <a class="page-link bg-dark text-white" href="?page={{ page_num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">{{ page_num }}</a>
+                          </li>
+                        {% endif %}
+                      {% endfor %}
+                  
+                      {% if users.has_next %}
+                        <li class="page-item">
+                          <a class="page-link bg-dark text-white" href="?page={{ users.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">Next</a>
+                        </li>
+                      {% endif %}
+                    </ul>
+                  </nav>
+                  
+                
 
 {% endblock %}

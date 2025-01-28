@@ -19,6 +19,9 @@
             <i class="fa-regular fa-pen-to-square"></i> Edit
         </a>
         <a href="{% url 'tenant_status' user.uid %}" class="btn btn-sm {% if user.tenant.is_active %} btn-danger {% else %} btn-primary {% endif %}"><i class="fa-solid fa-forward-step"></i> {% if user.tenant.is_active %} Deactive {% else %} Active {% endif %} </a>
+        <a href="{% url 'delete_user' user.user.id %}" class="btn btn-sm btn-danger">
+            <i class="fa-solid fa-user-minus"></i> Delete User
+        </a>
     </div>
     <div class="col-md-6 d-flex justify-content-end align-items-center mb-2 gap-2">
         <strong>Status: </strong> <span class="{% if user.tenant.is_active %} text-primary {% else %} text-danger {% endif %} fw-bold"> {% if user.tenant.is_active %} ACTIVE {% else %} DEACTIVE {% endif %} </span>

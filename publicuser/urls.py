@@ -1,5 +1,7 @@
 from django.urls import path, include
 from . import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('', views.index, name='home'),
@@ -14,4 +16,9 @@ urlpatterns = [
     path('user/<str:uid>/details/', views.user_details, name='user_details'),
     path('user/<str:uid>/tenant/status', views.tenant_status, name='tenant_status'),
     path('user/<str:uid>/update/', views.user_update, name='user_update'),
+    path('users/prfiles/my-profile', views.profile, name='profile'),
 ]
+
+
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

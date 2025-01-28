@@ -25,9 +25,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG')
+DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', 'saf.localhost', '.saf.localhost', '*.saf.localhost', '192.168.10.16']
+
 
 
 # Application definition
@@ -64,7 +65,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django_tenants.middleware.main.TenantMainMiddleware'
+    'django_tenants.middleware.main.TenantMainMiddleware',
+    'django_tenants.middleware.TenantMiddleware'
 ]
 
 ROOT_URLCONF = 'MULTI_SAF.urls'
@@ -141,19 +143,20 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
-MEDIA_URL = 'media/'
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+MEDIA_URL = '/media/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-MEDIA_ROOT = BASE_DIR/'media'
-STATIC_ROOT = BASE_DIR/'staticfiles'
+MEDIA_ROOT = BASE_DIR / 'media'
+# STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-TENANT_MODEL = config('TENANT_MODEL')
-TENANT_DOMAIN_MODEL = config('TENANT_DOMAIN_MODEL')
-PUBLIC_SCHEMA_URLCONF = config('PUBLIC_SCHEMA_URLCONF')
+TENANT_MODEL = 'public.Tenant'
+TENANT_DOMAIN_MODEL = 'public.Domain'
+PUBLIC_SCHEMA_URLCONF = 'public.urls'
 
 
 # SMTP server

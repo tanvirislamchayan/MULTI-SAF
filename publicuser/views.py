@@ -12,6 +12,7 @@ from django.db.models import Q
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.db import connection
+from django.core.paginator import Paginator
 # Create your views here.
 
 def index(request):
@@ -131,9 +132,15 @@ def dashboard(request):
     }
     with schema_context(current_schema):
         requests = User.objects.filter(is_active=False)
+        total_requests = User.objects.filter(is_active=False).count()
+        total_users = User.objects.filter(is_active=True, is_superuser=False, is_staff=False).count()
+        total_active_users = PublicUser.objects.filter(tenant__is_active=True, user__is_active=True, user__is_superuser=False, user__is_staff=False).count()
         if requests:
             context.update({
-                'requests': requests
+                'requests': requests,
+                'total_requests': total_requests,
+                'total_users': total_users,
+                'total_active_users': total_active_users,
             })
     return render(request, 'public/dashboard/dashboard.html', context)
 
@@ -142,20 +149,52 @@ def user_requests(request):
     if not request.user.is_authenticated:
         messages.warning(request, 'Please Login First!')
         return redirect('login')
+
     current_schema = request.tenant.schema_name
     referal_url = request.META.get('HTTP_REFERER', request.path_info)
     context = {
         'page': 'SAF | Requests',
         'active_url_name': 'requests'
     }
+
     with schema_context(current_schema):
         try:
             requested_users = User.objects.filter(is_active=False)
+            
+            # Handle search functionality
+            if 'search' in request.GET:
+                search_term = request.GET.get('search', '').strip()
+                if search_term:
+                    requested_users = requested_users.filter(
+                        Q(username__icontains=search_term) |
+                        Q(email__icontains=search_term) |
+                        Q(first_name__icontains=search_term) |
+                        Q(last_name__icontains=search_term) |
+                        Q(public_user__phone__icontains=search_term) |
+                        Q(public_user__institute__icontains=search_term) |
+                        Q(public_user__description__icontains=search_term) |
+                        Q(public_user__district__icontains=search_term) |
+                        Q(public_user__division__icontains=search_term) |
+                        Q(public_user__sid__icontains=search_term) |
+                        Q(public_user__tenant__schema_name__icontains=search_term) |
+                        Q(public_user__tenant__name__icontains=search_term) |
+                        Q(public_user__tenant__domains__domain__icontains=search_term) 
+                    )
+            
+            # Add pagination logic
+            paginator = Paginator(requested_users, 20)  # 20 users per page
+            page_number = request.GET.get('page')
+            paginated_requested_users = paginator.get_page(page_number)
+
             context.update({
-                'requested_users': requested_users if requested_users else ''
+                'requested_users': paginated_requested_users,
+                'page_obj': paginated_requested_users,  # Add for pagination controls
             })
+
         except Exception as e:
             print(e)
+    
+    # Handle redirect logic
     if 'uid' in request.GET:
         uid = request.GET.get('uid')
         if uid:
@@ -164,6 +203,7 @@ def user_requests(request):
         id = request.GET.get('delete', '')
         if id:
             return redirect('delete_user', id=id)
+        
     return render(request, 'public/dashboard/requests.html', context)
 
 def delete_user(request, id):
@@ -172,18 +212,22 @@ def delete_user(request, id):
         return redirect('login')
     current_schema = request.tenant.schema_name
     with schema_context(current_schema):
-        public_user = None
-        tenant = None
-        domain_obj = None
-        user_obj = User.objects.get(id=id)
-        print(f'user: {user_obj}')
+        try:
 
-        if user_obj:
-            user_name = f"{user_obj.first_name} {user_obj.last_name if user_obj.last_name else ''}"
-            public_user = PublicUser.objects.filter(user=user_obj).first()
-            public_user.delete() if public_user else None
-            user_obj.delete()
-            messages.info(request, f'User deleted {user_name}')
+            public_user = None
+            tenant = None
+            domain_obj = None
+            user_obj = User.objects.get(id=id)
+            print(f'user: {user_obj}')
+
+            if user_obj:
+                user_name = f"{user_obj.first_name} {user_obj.last_name if user_obj.last_name else ''}"
+                public_user = PublicUser.objects.filter(user=user_obj).first()
+                public_user.delete() if public_user else None
+                user_obj.delete()
+                messages.info(request, f'User deleted {user_name}')
+        except Exception as e:
+            print(e)
         return HttpResponseRedirect(request.META.get('HTTP_REFERER', request.path_info))
 
 
@@ -314,15 +358,40 @@ def users(request):
         'user_link': 'users'
     }
 
-    if not request.user.is_authenticated:
-        messages.warning(request, 'Please Login First!')
-        return redirect('login')
     current_schema = request.tenant.schema_name
     with schema_context(current_schema):
         users = User.objects.filter(is_active=True, is_superuser=False)
+        
+        # Handle search functionality
+        if 'search' in request.GET:
+            search_term = request.GET.get('search', '').strip()
+            if search_term:
+                users = users.filter(
+                    Q(username__icontains=search_term) |
+                    Q(email__icontains=search_term) |
+                    Q(first_name__icontains=search_term) |
+                    Q(last_name__icontains=search_term) |
+                    Q(public_user__phone__icontains=search_term) |
+                    Q(public_user__institute__icontains=search_term) |
+                    Q(public_user__description__icontains=search_term) |
+                    Q(public_user__district__icontains=search_term) |
+                    Q(public_user__division__icontains=search_term) |
+                    Q(public_user__sid__icontains=search_term) |
+                    Q(public_user__tenant__schema_name__icontains=search_term) |
+                    Q(public_user__tenant__name__icontains=search_term) |
+                    Q(public_user__tenant__domains__domain__icontains=search_term) 
+                )
+
+        # Add pagination logic
+        paginator = Paginator(users, 20)  # 20 users per page
+        page_number = request.GET.get('page')
+        paginated_users = paginator.get_page(page_number)
+
         context.update({
-            'users': users
+            'users': paginated_users,
+            'page_obj': paginated_users,  # Add for pagination controls
         })
+
     return render(request, 'public/dashboard/users.html', context)
 
 
@@ -345,6 +414,8 @@ def user_details(request, uid):
                 'page': f'SAF | {public_user.user.first_name} {public_user.user.last_name}',
                 'user': public_user
             })
+        else:
+            return redirect('users')
 
     return render(request, 'public/dashboard/user_details.html', context)
 
@@ -451,3 +522,7 @@ def user_update(request, uid):
                 return HttpResponseRedirect(referal_url)
 
     return render(request, 'public/dashboard/edit_user.html', context)
+
+
+def profile(request):
+    return render(request, 'public/dashboard/profile.html')

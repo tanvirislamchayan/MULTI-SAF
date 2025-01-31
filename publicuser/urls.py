@@ -16,7 +16,10 @@ urlpatterns = [
     path('user/<str:uid>/details/', views.user_details, name='user_details'),
     path('user/<str:uid>/tenant/status', views.tenant_status, name='tenant_status'),
     path('user/<str:uid>/update/', views.user_update, name='user_update'),
-    path('users/prfiles/my-profile', views.profile, name='profile'),
+    path('users/profiles/my-profile', views.profile, name='profile'),
+    path('users/profiles/my-profile/', views.save_profile_image, name='save_profile'),
+    path('user/paswords/reset/', views.resetPassEmail, name='restPass'),
+    path('user/<str:uid>/passwords/reset-password/', views.mail_reset_authentication, name='mail_reset_authentication')
 ]
 
 

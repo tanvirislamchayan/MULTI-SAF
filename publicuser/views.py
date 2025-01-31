@@ -13,6 +13,9 @@ from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.db import connection
 from django.core.paginator import Paginator
+from django.http import JsonResponse
+from django.core.files.base import ContentFile
+import base64
 # Create your views here.
 
 def index(request):
@@ -525,4 +528,98 @@ def user_update(request, uid):
 
 
 def profile(request):
-    return render(request, 'public/dashboard/profile.html')
+    referal_url = request.META.get('HTTP_REFERER', request.path_info)
+    current_schema = request.tenant.schema_name
+    context = {
+        'page': f"SAF | Profile",
+        'bg_link': 'profile'
+    }
+    
+    return render(request, 'public/dashboard/profile.html', context)
+
+def save_profile_image(request):
+    if request.method == 'POST' and request.user.is_authenticated:
+        image_type = request.POST.get('imageType')
+        image_data = request.FILES.get('image')
+
+        if not image_data:
+            return JsonResponse({'success': False, 'message': 'No image uploaded'}, status=400)
+
+        # Get the user's profile
+        profile, created = PublicUser.objects.get_or_create(user=request.user)
+
+        # Save the image to the correct field
+        if image_type == 'cover':
+            profile.cover_image.save(f"{request.user.username}_cover.jpg", image_data)
+        else:
+            profile.profile_image.save(f"{request.user.username}_profile.jpg", image_data)
+
+        # Return the new image URL
+        return JsonResponse({'success': True, 'image_url': profile.profile_image.url if image_type == 'profile' else profile.cover_image.url})
+
+    return JsonResponse({'success': False, 'message': 'Invalid request'}, status=400)
+
+
+def resetPassEmail(request):
+    referal_url = request.META.get('HTTP_REFERER', request.path_info)
+    current_schema = request.tenant.schema_name
+    if request.method == 'POST':
+        username = request.POST.get('username', '')
+        try:
+            with schema_context(current_schema):
+                user_obj = User.objects.filter(username=username).first()
+                if user_obj:
+                    publicuser = PublicUser.objects.filter(user=user_obj).first()
+                    if publicuser:
+                        context = {
+                            'name': f'{user_obj.first_name} {user_obj.last_name}',
+                            'username': user_obj.email,
+                            'message': 'We got a request to reset your password. Please Click on the button below to reset you passord.',
+                            'uid': f'{publicuser.uid}'
+                        }
+                        sendmail(
+                            recipient_name=user_obj.email,  # Individual email as a string
+                            message=None, 
+                            subject="RESET PASSWORD",  # Add a meaningful subject
+                            recipient_email=[user_obj.email],  # Pass the email in a list
+                            template_name='pass_reset_mail.html', 
+                            context=context
+                        )
+                        messages.info(request, "We've sent a password reset email to your inbox. Please check your email to proceed. </br> <strong>Note:</strong> If you don’t see it, kindly check your spam or junk folder.")
+                        return HttpResponseRedirect(referal_url)
+                    else:
+                        messages.error(request, 'No User found.')
+                        return HttpResponseRedirect(referal_url)
+        except Exception as e:
+            print(e)
+    return render(request, 'public/reset_pass.html')
+
+
+def mail_reset_authentication(request, uid):
+    referal_url = request.META.get('HTTP_REFERER', request.path_info)
+    current_schema = request.tenant.schema_name
+
+    if request.method == 'POST':
+        password = request.POST.get('password', '')
+        con_pass = request.POST.get('con_pass', '')
+        if password != con_pass:
+            messages.error(request, "Password doesn't match")
+            return HttpResponseRedirect(referal_url)
+        if all([password, con_pass]) :
+            try:
+                with schema_context(current_schema):
+                    publicuser = PublicUser.objects.filter(uid=uid).first()
+                    user_obj = publicuser.user
+                    if user_obj:
+                        user_obj.set_password(password)
+                        user_obj.save()
+                        messages.success(request, "Password reset successfully.")
+                        return redirect('login')
+            except Exception as e:
+                print(e)
+                messages.error(request, 'Something went wrong please contact to the administrator')
+                return HttpResponseRedirect(referal_url)
+        else:
+            messages.warning(request, 'Please fill all the fields')
+            return HttpResponseRedirect(referal_url)
+    return render(request, 'public/reset_password.html')

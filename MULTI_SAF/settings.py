@@ -27,7 +27,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', 'saf.localhost', '.saf.localhost', '*.saf.localhost', '192.168.10.16']
+ALLOWED_HOSTS = ['localhost', 'saf.localhost', '.saf.localhost', '*.saf.localhost', '192.168.10.16', '192.168.1.20']
 
 
 

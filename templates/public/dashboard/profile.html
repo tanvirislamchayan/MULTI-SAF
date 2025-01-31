@@ -1,7 +1,187 @@
 {% extends "public/base/base.html" %}
 {% load static %}
 {% block start %}
-<h3 class="text-center p-2 d-heading mt-2 ">
-    <i class="fa-solid fa-user me-1"></i> {{ request.user.first_name }} {{ request.user.last_name }}
-</h3>
+
+<!-- Include Cropper.js for image resizing -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+
+<style>
+    .profiles {
+        position: relative;
+    }
+
+    .profile-cover {
+        position: relative;
+        background-size: cover;
+        height: 150px;
+        overflow: hidden;
+        width: 100%;
+    }
+
+    .profile-img {
+        width: 150px;
+        height: 150px;
+        aspect-ratio: 1/1;
+        background-size: cover;
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        top: 100px;
+        border: 4px solid white;
+        border-radius: 50%;
+        background-color: rgba(255, 192, 203, 0.829);
+        overflow: hidden;
+    }
+
+    .profile-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+
+    .profile-img form {
+        position: absolute;
+        background: rgba(0, 0, 0, 0.5);
+        padding: 5px;
+        aspect-ratio: 1/1;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        width: 100%;
+        height: 40px;
+        /* border-radius: 50%; */
+    }
+
+    .profile-img label {
+        color: white;
+        cursor: pointer;
+    }
+
+    /* Fix Cropper for XS Devices */
+    @media (max-width: 576px) {
+        .modal-dialog {
+            max-width: 90%;
+        }
+        #cropImage {
+            max-width: 100%;
+            height: auto;
+        }
+    }
+</style>
+
+<div class="profiles w-100 d-flex justify-content-center flex-column align-items-center my-2">
+    <!-- Cover Image Section -->
+    <div class="profile-cover d-flex justify-content-center align-items-center position-relative">
+        {% if request.user.public_user.cover_image %}
+        <img height="100%" src="/media/{{request.user.public_user.cover_image}}" alt="Cover Image" id="coverPreview">
+        {% else %}
+        <div class="w-100 h-100 position-absolute bottom-0 top-0 right-0 left-0 bg-dark"></div>
+        {% endif %}
+        
+        <form id="cover-form" class="cover-btns d-flex justify-content-end gap-2 position-absolute bottom-0 end-0 p-2">
+            <div class="edit">
+                <label class="btn btn-dark" for="cover"><i class="fa-regular fa-pen-to-square"></i></label>
+                <input name="cover" id="cover" class="d-none" type="file" accept="image/*">
+            </div>
+            <!-- <button class="btn btn-primary" type="submit"><i class="fa-solid fa-floppy-disk"></i></button> -->
+        </form>
+    </div>
+    
+    <!-- Profile Image Section -->
+    <div class="profile-img shadow d-flex justify-content-center align-items-center">
+        <img src="{% if request.user.public_user.profile_image %} {{request.user.public_user.profile_image.url}} {% else %} {% static 'img/upload-image.webp' %} {% endif %} " alt="Profile Image" id="profilePreview">
+        <form id="profile-form" class="d-flex align-items-center justify-content-center p-2">
+            <label for="profile-img">
+                <i class="fa-regular fa-pen-to-square"></i>
+            </label>
+            <input name="profile-img" id="profile-img" class="d-none" type="file" accept="image/*">
+        </form>
+    </div>
+</div>
+
+<!-- Modal for Image Cropping -->
+<div class="modal fade" id="imageCropModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Resize & Crop Image</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0 text-center">
+                <img id="cropImage" style="max-width: 100%; height: auto;">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="cropSave">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let cropper;
+    let currentImageType = '';
+
+    function openCropModal(file, imageType) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('cropImage').src = e.target.result;
+            currentImageType = imageType;
+            setTimeout(() => {
+                if (cropper) cropper.destroy();
+                cropper = new Cropper(document.getElementById('cropImage'), {
+                    aspectRatio: imageType === 'cover' ? 1101 / 150 : 1 / 1,
+                    viewMode: 1
+                });
+            }, 500);
+            new bootstrap.Modal(document.getElementById('imageCropModal')).show();
+        };
+        reader.readAsDataURL(file);
+    }
+
+    document.getElementById('cover').addEventListener('change', function(event) {
+        if (event.target.files.length > 0) {
+            openCropModal(event.target.files[0], 'cover');
+        }
+    });
+
+    document.getElementById('profile-img').addEventListener('change', function(event) {
+        if (event.target.files.length > 0) {
+            openCropModal(event.target.files[0], 'profile');
+        }
+    });
+
+    document.getElementById('cropSave').addEventListener('click', function() {
+        if (cropper) {
+            const canvas = cropper.getCroppedCanvas();
+            canvas.toBlob(function(blob) {
+                const formData = new FormData();
+                formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+                formData.append('image', blob);
+                formData.append('imageType', currentImageType);
+
+                fetch("{% url 'save_profile' %}", {
+                    method: "POST",
+                    body: formData,
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest"
+                    }
+                }).then(response => response.json())
+                  .then(data => {
+                      if (data.success) {
+                          if (currentImageType === 'cover') {
+                              document.getElementById('coverPreview').src = data.image_url;
+                          } else {
+                              document.getElementById('profilePreview').src = data.image_url;
+                          }
+                          bootstrap.Modal.getInstance(document.getElementById('imageCropModal')).hide();
+                      }
+                  });
+            }, 'image/jpeg');
+        }
+    });
+</script>
+
 {% endblock %}

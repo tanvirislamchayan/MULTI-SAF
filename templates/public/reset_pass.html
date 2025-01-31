@@ -116,26 +116,19 @@ footer {
     <section class="container mx-auto">
         <div class="row">
             <div class="col-md-5 mx-auto col-sm-7 my-5 border py-2 rounded shadow-sm form-div">
-                <h3 class=" text-center w-100 p-2 border-bottom border-warning border-3 mb-2" >Login</h3>
+                <h3 class=" text-center w-100 p-2 border-bottom border-warning border-3 mb-2" >Reset Password</h3>
                 <form action="" class="register_form" method="post">
                     {% csrf_token %}
                     <div class="col-12 mb-3">
-                        <label for="username">Username</label>
-                        <input required type="text" name="username" id="username" class="form-control" placeholder="Username">
-                    </div>
-                    <div class="col-12 mb-3">
-                        <label for="password">Password</label>
-                        <input required type="password" name="password" id="password" class="form-control" placeholder="Password">
-                        <small>
-                            Forgot Password? <a href="{% url 'restPass' %}">Reset Password</a>
-                        </small>
+                        <label for="username">Email/Username</label>
+                        <input required type="text" name="username" id="username" class="form-control" placeholder="Enter Email or Username">
                     </div>
                     <div class="col-12 d-flex justify-content-end gap-2">
-                        <button type="submit" class="btn btn-warning btn-sm">Login</button>
+                        <button type="submit" class="btn btn-primary btn-sm">Submit</button>
                     </div>
-                    <div class="col-12 mt-1 text-center">
+                    <!-- <div class="col-12 mt-1 text-center">
                         <small class="p-0 text">Don't have an account? <a href="{% url 'register' %}">Register here.</a></small>
-                    </div>
+                    </div> -->
                 </form>
             </div>
         </div>

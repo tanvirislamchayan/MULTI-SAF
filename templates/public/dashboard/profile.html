@@ -17,6 +17,29 @@
         height: 150px;
         overflow: hidden;
         width: 100%;
+        cursor: pointer;
+    }
+
+    .update-btn {
+        position: absolute;
+        bottom: .5rem;
+        right: 45px;
+        transform: translateY(50px);
+        transition: all .3s;
+        transition-delay: .1s;
+    }
+
+    .cover-btns {
+        transform: translateY(50px);
+        transition: all .3s;
+    }
+
+    .profile-cover:hover .cover-btns {
+        transform: translateY(0px);
+    }
+
+    .profile-cover:hover .update-btn {
+        transform: translateY(0px);
     }
 
     .profile-img {
@@ -25,8 +48,7 @@
         aspect-ratio: 1/1;
         background-size: cover;
         position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
+        left: 0;
         top: 100px;
         border: 4px solid white;
         border-radius: 50%;
@@ -39,6 +61,7 @@
         height: 100%;
         object-fit: cover;
         border-radius: 50%;
+        cursor: pointer;
     }
 
     .profile-img form {
@@ -51,7 +74,16 @@
         right: 0;
         width: 100%;
         height: 40px;
+        transform: translateY(40px);
+        transform-origin: bottom;
+        overflow: hidden;
+        transition: all .3s;
         /* border-radius: 50%; */
+    }
+
+    .profile-img:hover form {
+        transform: translateY(0px);
+        transform-origin: bottom;
     }
 
     .profile-img label {
@@ -69,24 +101,31 @@
             height: auto;
         }
     }
+
+    .details {
+        transform: translateY(100px);
+    }
 </style>
 
 <div class="profiles w-100 d-flex justify-content-center flex-column align-items-center my-2">
     <!-- Cover Image Section -->
     <div class="profile-cover d-flex justify-content-center align-items-center position-relative">
         {% if request.user.public_user.cover_image %}
-        <img height="100%" src="/media/{{request.user.public_user.cover_image}}" alt="Cover Image" id="coverPreview">
+        <img height="100%" src="{% if request.user.public_user.cover_image %} {{request.user.public_user.cover_image.url}} {% else %} {% static 'img/js-cover.jpg' %} {% endif %} " alt="Cover Image" id="coverPreview">
         {% else %}
-        <div class="w-100 h-100 position-absolute bottom-0 top-0 right-0 left-0 bg-dark"></div>
+        <div class="w-100 h-100 position-absolute bottom-0 top-0 right-0 left-0 bg-dark text-white fw-bold display-6 text-center pt-5">
+            JS Technology
+        </div>
         {% endif %}
         
         <form id="cover-form" class="cover-btns d-flex justify-content-end gap-2 position-absolute bottom-0 end-0 p-2">
             <div class="edit">
-                <label class="btn btn-dark" for="cover"><i class="fa-regular fa-pen-to-square"></i></label>
+                <label class="btn btn-dark btn-sm" for="cover"><i class="fa-regular fa-pen-to-square"></i></label>
                 <input name="cover" id="cover" class="d-none" type="file" accept="image/*">
             </div>
             <!-- <button class="btn btn-primary" type="submit"><i class="fa-solid fa-floppy-disk"></i></button> -->
         </form>
+        <a href="#" class="btn btn-dark btn-sm update-btn">Update</a>
     </div>
     
     <!-- Profile Image Section -->
@@ -99,6 +138,13 @@
             <input name="profile-img" id="profile-img" class="d-none" type="file" accept="image/*">
         </form>
     </div>
+</div>
+
+<div class="col-md-12 details">
+    <h4 class="my-0">
+        {{ request.user.first_name }} {{ request.user.last_name }}
+    </h4>
+    <small class="text-muted"> {{ request.user.email }} </small>
 </div>
 
 <!-- Modal for Image Cropping -->

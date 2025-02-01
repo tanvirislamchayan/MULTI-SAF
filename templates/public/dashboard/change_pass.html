@@ -1,0 +1,51 @@
+{% extends "public/base/base.html" %}
+{% load static %}
+{% block start %}
+<h3 class="text-center p-2 d-heading mt-2 ">
+    <i class="fa-solid fa-user-pen me-1"></i> Change Password
+</h3>
+
+<!-- Display Messages -->
+{% if messages %}
+<div class="container">
+    {% for message in messages %}
+    <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="d-flex align-items-center flex-wrap flex" style="min-height: 75vh;">
+
+    <div class="col-md-6 p-4  align-self-stretch d-flex flex-column justify-content-center">
+        <h5 class="text-center text-warning">Why Change Your Password Regularly?</h5>
+        <hr class="border-4 rounded border-warning">
+        <p class="text-white text-center">
+            Keeping your password updated helps enhance security and prevent unauthorized access to your account.
+            Choose a strong password that includes a mix of letters, numbers, and special characters.
+        </p>
+    </div>
+    <div class="col-md-6 p-2 border shadow bg-light rounded">
+        <form action="" method="POST" class="row">
+            {% csrf_token %}
+            <div class="col-12 mb-3">
+                <label for="current_pass"> <span class="text-danger">*</span> Current Password</label>
+                <input class="form-control" type="password" name="current_pass" id="current_pass" placeholder="Enter current Password" required>
+            </div>
+            <div class="col-12 mb-3">
+                <label for="new_pass"> <span class="text-danger">*</span> New Password</label>
+                <input class="form-control" type="password" name="new_pass" id="new_pass" placeholder="Enter New Password" required>
+            </div>
+            <div class="col-12 mb-3">
+                <label for="confirm_pass"> <span class="text-danger">*</span> Confirm Password</label>
+                <input class="form-control" type="password" name="confirm_pass" id="confirm_pass" placeholder="Rewrite Password" required>
+            </div>
+            <div class="col-12 mt-3 d-flex justify-content-end gap-2">
+                <button type="submit" class="btn btn-primary btn-sm">Change Password</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

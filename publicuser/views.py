@@ -5,7 +5,7 @@ from django_tenants.utils import schema_context
 from django.contrib.auth.models import User
 from public.models import Tenant, Domain
 from .models import PublicUser
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout,update_session_auth_hash
 from base.messages import sendmail
 from django.db import transaction
 from django.db.models import Q
@@ -528,6 +528,9 @@ def user_update(request, uid):
 
 
 def profile(request):
+    if not request.user.is_authenticated:
+        messages.warning(request, 'Please Login First!')
+        return redirect('login')
     referal_url = request.META.get('HTTP_REFERER', request.path_info)
     current_schema = request.tenant.schema_name
     context = {
@@ -538,6 +541,9 @@ def profile(request):
     return render(request, 'public/dashboard/profile.html', context)
 
 def save_profile_image(request):
+    if not request.user.is_authenticated:
+        messages.warning(request, 'Please Login First!')
+        return redirect('login')
     if request.method == 'POST' and request.user.is_authenticated:
         image_type = request.POST.get('imageType')
         image_data = request.FILES.get('image')
@@ -558,6 +564,41 @@ def save_profile_image(request):
         return JsonResponse({'success': True, 'image_url': profile.profile_image.url if image_type == 'profile' else profile.cover_image.url})
 
     return JsonResponse({'success': False, 'message': 'Invalid request'}, status=400)
+
+def change_pass(request, uid):
+    if not request.user.is_authenticated:
+        messages.warning(request, 'Please Login First!')
+        return redirect('login')
+    current_schema = request.tenant.schema_name
+    referal_url = request.META.get('HTTP_REFERER', request.path_info)
+    context = {
+        'page': f"SAF | Change Password",
+    }
+    try:
+
+        with schema_context(current_schema):
+            user = request.user
+            if request.method == 'POST':
+                current_pass = request.POST.get('current_pass', '')
+                new_pass = request.POST.get('new_pass', '')
+                confirm_pass = request.POST.get('confirm_pass', '')
+                if not user.check_password(current_pass):
+                    messages.error(request, 'Current password is incorrect!')
+                    return HttpResponseRedirect(referal_url)
+                if new_pass != confirm_pass:
+                    messages.error(request, 'New password and confirm password do not match.')
+                    return HttpResponseRedirect(referal_url)
+                if len(new_pass) < 8:
+                    messages.error(request, 'Password must be at least 8 characters long.')
+                    return redirect('change_pass', uid=user.id)
+            user.set_password(new_pass)
+            user.save()
+            update_session_auth_hash(request, user)
+            messages.success(request, 'Password changed successfully!')
+            return redirect('dashboard')
+    except Exception as e:
+        print(e)
+    return render(request, 'public/dashboard/change_pass.html', context)
 
 
 def resetPassEmail(request):

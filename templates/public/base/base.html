@@ -106,14 +106,16 @@
                 <a href="{% url 'logout' %}" class="nav-items text-white nav-link p-1 pb-0">
                     <i class="fa-solid fa-right-from-bracket me-1"></i> Logout
                 </a>
+                {% if request.user.public_user %}
                 <div class="nav-items text-warning settings text-white nav-link p-1 pb-0">
                     <i class="fa fa-solid fa-gear"></i> Settings
 
                     <div id="settingsItem" class="settings-item shadow bg-dark d-flex flex-column">
                         <a href=" {% url 'profile' %} " class="nav-link fw-bold text-white p-2 w-100"> <i class="fa-solid fa-user me-1 me-1"></i> Profile </a>
-                        <a href="#" class="nav-link fw-bold text-white p-2 w-100"> <i class="fa-solid fa-key me-1"></i> Change Password </a>
+                        <a href="{% url 'change_pass' request.user.public_user.uid %}" class="nav-link fw-bold text-white p-2 w-100"> <i class="fa-solid fa-key me-1"></i> Change Password </a>
                     </div>
                 </div>
+                {% endif %}
                 {% else %}
                 <a href="{% url 'login' %}" class="nav-items text-white nav-link p-1 pb-0">
                     <i class="fa-solid fa-arrow-right-to-bracket"></i> Login
@@ -133,18 +135,20 @@
                 <a href="{% url 'logout' %}" class="nav-items text-white nav-link p-1 pb-0">
                     <i class="fa-solid fa-right-from-bracket"></i>
                 </a>
+                {% if request.user.public_user %}
+                <div class="nav-items settings text-warning text-white nav-link p-1 pb-0">
+                    <i class="fa fa-solid fa-gear"></i>
+                    <div id="settingsItem" class="settings-item shadow bg-dark d-flex flex-column">
+                        <a href=" {% url 'profile' %} " class="nav-link fw-bold text-white p-2 w-100"> <i class="fa-solid fa-user me-1 me-1"></i> Profile </a>
+                        <a href="{% url 'change_pass' request.user.public_user.uid %}" class="nav-link fw-bold text-white p-2 w-100"> <i class="fa-solid fa-key me-1"></i> Change Password </a>
+                    </div>
+                </div>
+                {% endif %}
                 {% else %}
                 <a href="{% url 'login' %}" class="nav-items text-white nav-link p-1 pb-0">
                     <i class="fa-solid fa-arrow-right-to-bracket"></i>
                 </a>
                 {% endif %}
-                <div class="nav-items settings text-warning text-white nav-link p-1 pb-0">
-                    <i class="fa fa-solid fa-gear"></i>
-                    <div id="settingsItem" class="settings-item shadow bg-dark d-flex flex-column">
-                        <a href=" {% url 'profile' %} " class="nav-link fw-bold text-white p-2 w-100"> <i class="fa-solid fa-user me-1 me-1"></i> Profile </a>
-                        <a href="#" class="nav-link fw-bold text-white p-2 w-100"> <i class="fa-solid fa-key me-1"></i> Change Password </a>
-                    </div>
-                </div>
             </div>
         </div>
     </div>

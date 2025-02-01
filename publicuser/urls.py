@@ -18,6 +18,7 @@ urlpatterns = [
     path('user/<str:uid>/update/', views.user_update, name='user_update'),
     path('users/profiles/my-profile', views.profile, name='profile'),
     path('users/profiles/my-profile/', views.save_profile_image, name='save_profile'),
+    path('users/<str:uid>/change-password/', views.change_pass, name='change_pass'),
     path('user/paswords/reset/', views.resetPassEmail, name='restPass'),
     path('user/<str:uid>/passwords/reset-password/', views.mail_reset_authentication, name='mail_reset_authentication')
 ]
